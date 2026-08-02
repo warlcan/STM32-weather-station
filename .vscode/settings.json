@@ -1,0 +1,6 @@
+{
+    "cmake.cmakePath": "cmake",
+    "cmake.preferredGenerators": [
+        "Ninja"
+    ]
+}
