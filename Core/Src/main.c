@@ -42,7 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+volatile uint32_t system_ticks = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,7 +67,7 @@ void RTT_write_int(int num);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  AHT20_Data_t aht20_data;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -87,7 +87,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  
+  SysTick_Config(SystemCoreClock / 1000U); // 1 ms 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -99,6 +99,7 @@ int main(void)
   LL_SPI_Enable(SPI1);
   SEGGER_RTT_Init();
   SEGGER_RTT_WriteString(0, "RTT initialized.\r\n");
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,7 +107,7 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-
+  
   /* USER CODE BEGIN 3 */
 
   /* USER CODE END 3 */
@@ -333,10 +334,10 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void RTT_write_int(int num) {
-    if (num == 0) { SEGGER_RTT_PutChar(0, '0'); return; }
-    if (num < 0) { SEGGER_RTT_PutChar(0, '-'); num = -num; }
-    if (num >= 10) { RTT_write_int(num / 10); }
-    SEGGER_RTT_PutChar(0, (num % 10) + '0');
+  if (num == 0) { SEGGER_RTT_PutChar(0, '0'); return; }
+  if (num < 0) { SEGGER_RTT_PutChar(0, '-'); num = -num; }
+  if (num >= 10) { RTT_write_int(num / 10); }
+  SEGGER_RTT_PutChar(0, (num % 10) + '0');
 }
 /* USER CODE END 4 */
 
