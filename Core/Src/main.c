@@ -32,7 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-// #define debug
+#define debug
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -120,12 +120,7 @@ int main(void)
   /* USER CODE END WHILE */
   
   /* USER CODE BEGIN 3 */
-  DEBUG_RTT_WriteString(0, "Test.\r\n");
-  DEBUG_RTT_WriteString(0, "Test.\r\n");
-  DEBUG_RTT_WriteString(0, "Test.\r\n");
-  DEBUG_RTT_WriteString(0, "Test.\r\n");
-  DEBUG_RTT_WriteString(0, "Test.\r\n");
-  LL_mDelay(100);
+  
   /* USER CODE END 3 */
   }
 }
