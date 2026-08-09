@@ -32,12 +32,21 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+// #define debug
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#ifdef debug
+    #define DEBUG_RTT_Init()                SEGGER_RTT_Init()        
+    #define DEBUG_RTT_WriteString(port, s)  SEGGER_RTT_WriteString(port, s)
+    #define DEBUG_RTT_PutChar(port, s)      SEGGER_RTT_PutChar(port, s)
+#else
+    #define DEBUG_RTT_Init()
+    #define DEBUG_RTT_WriteInt(num)
+    #define DEBUG_RTT_WriteString(port, s)
+    #define DEBUG_RTT_PutChar(port, s)
+#endif
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -52,7 +61,9 @@ static void MX_I2C1_Init(void);
 static void MX_SPI1_Init(void);
 
 /* USER CODE BEGIN PFP */
-void RTT_write_int(int num); 
+#ifdef debug
+void DEBUG_RTT_WriteInt(int num);
+#endif
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -87,7 +98,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  SysTick_Config(SystemCoreClock / 1000U); // 1 ms 
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -97,8 +108,8 @@ int main(void)
   
   /* USER CODE BEGIN 2 */
   LL_SPI_Enable(SPI1);
-  SEGGER_RTT_Init();
-  SEGGER_RTT_WriteString(0, "RTT initialized.\r\n");
+  DEBUG_RTT_Init();
+  DEBUG_RTT_WriteString(0, "RTT initialized.\r\n");
   
   /* USER CODE END 2 */
 
@@ -109,7 +120,12 @@ int main(void)
   /* USER CODE END WHILE */
   
   /* USER CODE BEGIN 3 */
-
+  DEBUG_RTT_WriteString(0, "Test.\r\n");
+  DEBUG_RTT_WriteString(0, "Test.\r\n");
+  DEBUG_RTT_WriteString(0, "Test.\r\n");
+  DEBUG_RTT_WriteString(0, "Test.\r\n");
+  DEBUG_RTT_WriteString(0, "Test.\r\n");
+  LL_mDelay(100);
   /* USER CODE END 3 */
   }
 }
@@ -333,12 +349,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void RTT_write_int(int num) {
-  if (num == 0) { SEGGER_RTT_PutChar(0, '0'); return; }
-  if (num < 0) { SEGGER_RTT_PutChar(0, '-'); num = -num; }
-  if (num >= 10) { RTT_write_int(num / 10); }
-  SEGGER_RTT_PutChar(0, (num % 10) + '0');
+#ifdef debug
+void DEBUG_RTT_WriteInt(int num) {
+  if (num == 0) { DEBUG_RTT_PutChar(0, '0'); return; }
+  if (num < 0)  { DEBUG_RTT_PutChar(0, '-'); num = -num; }
+  if (num >= 10){ DEBUG_RTT_WriteInt(num / 10); }
+  DEBUG_RTT_PutChar(0, (num % 10) + '0');
 }
+#endif
 /* USER CODE END 4 */
 
 /**
