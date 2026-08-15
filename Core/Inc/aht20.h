@@ -8,12 +8,11 @@
 
 #define AHT20_I2C_ADDRESS 0x38 << 1
 
-#define AHT20_CMD_MEASURE        0xAC
-#define AHT20_CMD_MEASURE_PARAM1 0x33
-#define AHT20_CMD_MEASURE_PARAM2 0x00
-
 #define AHT20_MEASURE_DELAY_MS 90
+#define AHT20_I2C_TIMEOUT_MS 10
+
 #define AHT20_STATUS_BUSY_BIT  0x80
+#define AHT20_STATUS_CAL_BIT 0x08
 
 typedef struct {
     float humidity;
