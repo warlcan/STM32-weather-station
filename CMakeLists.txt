@@ -47,6 +47,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/SEGGER_RTT.c
     Core/Src/aht20.c
+    Core/Src/bmp280.c
 )
 
 # Add include paths

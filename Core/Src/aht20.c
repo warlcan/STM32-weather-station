@@ -37,7 +37,9 @@ bool aht20_get_data(AHT20_Data_t *out_data){
     
     //Receive
     uint8_t data_buffer[6];
-    LL_I2C_HandleTransfer(I2C1, AHT20_I2C_ADDRESS, LL_I2C_ADDRSLAVE_7BIT, 6, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);
+    LL_I2C_HandleTransfer(I2C1, AHT20_I2C_ADDRESS,
+                          LL_I2C_ADDRSLAVE_7BIT, 6, 
+                          LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);
     for (uint8_t i = 0; i < 6; i++) {
         WAIT_I2C_FLAG(I2C1, LL_I2C_IsActiveFlag_RXNE, 10);
         data_buffer[i] = LL_I2C_ReceiveData8(I2C1);

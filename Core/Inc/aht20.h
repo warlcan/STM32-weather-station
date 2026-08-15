@@ -1,5 +1,5 @@
-#ifndef __AHT20_H
-#define __AHT20_H
+#ifndef AHT20_H
+#define AHT20_H
 
 #include <stdbool.h>
 #include "stm32l0xx_ll_i2c.h" 
