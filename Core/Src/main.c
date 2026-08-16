@@ -68,7 +68,12 @@ void DEBUG_RTT_WriteInt(int num);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void LowPower_Delay(uint32_t Delay) {
+    uint32_t start = system_ticks;
+    while ((system_ticks - start) < Delay) {
+        __WFI(); 
+    }
+}
 /* USER CODE END 0 */
 
 /**

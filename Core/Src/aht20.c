@@ -1,6 +1,7 @@
 #include "aht20.h"
 
 extern volatile uint32_t system_ticks;
+extern void LowPower_Delay(uint32_t Delay); 
 
 #define WAIT_I2C_FLAG(I2Cx, target_func, timeout) do {      \
     uint32_t _start = system_ticks;                         \
@@ -48,7 +49,7 @@ bool aht20_get_data(AHT20_Data_t *out_data) {
     uint8_t measure_cmd_bytes[3] = {0xAC, 0x33, 0x00};
     if(!transmit_command(I2C1, measure_cmd_bytes)) return false;
 
-    LL_mDelay(AHT20_MEASURE_DELAY_MS);
+    LowPower_Delay(AHT20_MEASURE_DELAY_MS);
     
     //Receive
     uint8_t receive_data_buffer[6];
@@ -59,7 +60,7 @@ bool aht20_get_data(AHT20_Data_t *out_data) {
     if ((receive_data_buffer[0] & AHT20_STATUS_CAL_BIT)  == 0) {
         uint8_t calibrate_cmd_bytes[] = {0xBE, 0x08, 0x00};
         if(!transmit_command(I2C1, calibrate_cmd_bytes)) return false;
-        LL_mDelay(AHT20_CALIBRATE_DELAY_MS);
+        LowPower_Delay(AHT20_CALIBRATE_DELAY_MS);
         return false;
     }
 
