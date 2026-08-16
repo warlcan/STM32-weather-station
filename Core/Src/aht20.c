@@ -5,10 +5,10 @@ extern volatile uint32_t system_ticks;
 #define WAIT_I2C_FLAG(I2Cx, target_func, timeout) do {      \
     uint32_t _start = system_ticks;                         \
     while (!target_func(I2Cx)) {                            \
-        if(LL_I2C_IsActiveFlag_NACK(I2C1) ||                \
-           LL_I2C_IsActiveFlag_BERR(I2C1)) {                \
-            LL_I2C_ClearFlag_NACK(I2C1);                    \
-            LL_I2C_ClearFlag_BERR(I2C1);                    \
+        if(LL_I2C_IsActiveFlag_NACK(I2Cx) ||                \
+           LL_I2C_IsActiveFlag_BERR(I2Cx)) {                \
+            LL_I2C_ClearFlag_NACK(I2Cx);                    \
+            LL_I2C_ClearFlag_BERR(I2Cx);                    \
             return false;                                   \
         }                                                   \
         if(system_ticks - _start >= timeout) return false;  \
@@ -28,14 +28,14 @@ bool transmit_command(I2C_TypeDef *I2Cx, uint8_t *cmd_data) {
 }
 
 bool receive_data(I2C_TypeDef *I2Cx, uint8_t *data_buffer) {
-    LL_I2C_HandleTransfer(I2C1, AHT20_I2C_ADDRESS,
+    LL_I2C_HandleTransfer(I2Cx, AHT20_I2C_ADDRESS,
                           LL_I2C_ADDRSLAVE_7BIT, 6, 
                           LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);
     for (uint8_t i = 0; i < 6; i++) {
-        WAIT_I2C_FLAG(I2C1, LL_I2C_IsActiveFlag_RXNE, AHT20_I2C_TIMEOUT_MS);
-        data_buffer[i] = LL_I2C_ReceiveData8(I2C1);
+        WAIT_I2C_FLAG(I2Cx, LL_I2C_IsActiveFlag_RXNE, AHT20_I2C_TIMEOUT_MS);
+        data_buffer[i] = LL_I2C_ReceiveData8(I2Cx);
     }
-    WAIT_I2C_FLAG(I2C1, LL_I2C_IsActiveFlag_STOP, AHT20_I2C_TIMEOUT_MS);
+    WAIT_I2C_FLAG(I2Cx, LL_I2C_IsActiveFlag_STOP, AHT20_I2C_TIMEOUT_MS);
     return true;
 }
 
