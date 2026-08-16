@@ -56,9 +56,11 @@ bool aht20_get_data(AHT20_Data_t *out_data) {
 
     //Check errors
     if ((receive_data_buffer[0] & AHT20_STATUS_BUSY_BIT) != 0) return false;
-    if ((receive_data_buffer[0] & AHT20_STATUS_CAL_BIT)  != 0) {
+    if ((receive_data_buffer[0] & AHT20_STATUS_CAL_BIT)  == 0) {
         uint8_t calibrate_cmd_bytes[] = {0xBE, 0x08, 0x00};
         if(!transmit_command(I2C1, calibrate_cmd_bytes)) return false;
+        LL_mDelay(AHT20_CALIBRATE_DELAY_MS);
+        return false;
     }
 
     //Parsing
