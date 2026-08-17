@@ -6,6 +6,7 @@
 #include "stm32l0xx_ll_i2c.h"
 #include "i2c_utils.h"
 
+#define AHT20_I2C I2C1
 #define AHT20_I2C_ADDRESS 0x38 << 1
 
 #define AHT20_CALIBRATE_DELAY_MS 40
@@ -19,6 +20,6 @@ typedef struct {
     float temperature;
 } AHT20_Data_t;
 
-bool aht20_get_data(I2C_TypeDef *I2Cx, AHT20_Data_t *out_data);
+bool aht20_get_data(AHT20_Data_t *out_data);
 
 #endif
