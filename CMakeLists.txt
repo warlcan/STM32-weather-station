@@ -48,6 +48,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/SEGGER_RTT.c
     Core/Src/aht20.c
     Core/Src/bmp280.c
+    Core/Src/i2c_utils.c
 )
 
 # Add include paths
