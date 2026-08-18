@@ -15,7 +15,7 @@ extern volatile uint32_t system_ticks;
     }                                                       \
 } while(0)
 
-bool transmit_command(I2C_TypeDef *I2Cx, uint32_t slave_addr, uint8_t *cmd_data, uint8_t cmd_size) {
+bool i2c_transmit_data(I2C_TypeDef *I2Cx, uint32_t slave_addr, uint8_t *cmd_data, uint8_t cmd_size) {
     LL_I2C_HandleTransfer(I2Cx, slave_addr, 
                         LL_I2C_ADDRSLAVE_7BIT, cmd_size, 
                         LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
@@ -27,7 +27,7 @@ bool transmit_command(I2C_TypeDef *I2Cx, uint32_t slave_addr, uint8_t *cmd_data,
     return true;
 }
 
-bool receive_data(I2C_TypeDef *I2Cx,uint32_t slave_addr, uint8_t *data_buffer, uint8_t data_size) {
+bool i2c_receive_data(I2C_TypeDef *I2Cx,uint32_t slave_addr, uint8_t *data_buffer, uint8_t data_size) {
     LL_I2C_HandleTransfer(I2Cx, slave_addr,
                           LL_I2C_ADDRSLAVE_7BIT, data_size, 
                           LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);

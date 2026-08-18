@@ -9,19 +9,19 @@ bool aht20_get_data(AHT20_Data_t *out_data) {
 
     //Transmit
     uint8_t measure_cmd_bytes[3] = {0xAC, 0x33, 0x00};
-    if(!transmit_command(AHT20_I2C, AHT20_I2C_ADDRESS, measure_cmd_bytes, 3)) return false;
+    if(!i2c_transmit_data(AHT20_I2C, AHT20_I2C_ADDRESS, measure_cmd_bytes, 3)) return false;
 
     LowPower_Delay(AHT20_MEASURE_DELAY_MS);
     
     //Receive
     uint8_t receive_data_buffer[6];
-    if(!receive_data(AHT20_I2C, AHT20_I2C_ADDRESS, receive_data_buffer, 6)) return false;
+    if(!i2c_receive_data(AHT20_I2C, AHT20_I2C_ADDRESS, receive_data_buffer, 6)) return false;
 
     //Check errors
     if ((receive_data_buffer[0] & AHT20_STATUS_BUSY_BIT) != 0) return false;
     if ((receive_data_buffer[0] & AHT20_STATUS_CAL_BIT)  == 0) {
         uint8_t calibrate_cmd_bytes[] = {0xBE, 0x08, 0x00};
-        if(!transmit_command(AHT20_I2C, AHT20_I2C_ADDRESS, calibrate_cmd_bytes, 3)) return false;
+        if(!i2c_transmit_data(AHT20_I2C, AHT20_I2C_ADDRESS, calibrate_cmd_bytes, 3)) return false;
         LowPower_Delay(AHT20_CALIBRATE_DELAY_MS);
         return false;
     }
