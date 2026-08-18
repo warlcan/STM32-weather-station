@@ -1,5 +1,5 @@
-#ifndef AHT20_UTILS_H
-#define AHT20_UTILS_H
+#ifndef AHT20_H
+#define AHT20_H
 
 #include <stdbool.h>
 #include <stdint.h>
