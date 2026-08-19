@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "SEGGER_RTT.h"
 #include "aht20.h"
+#include "bmp280.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -84,6 +85,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   AHT20_Data_t aht20_data;
+  BMP280_Data_t bmp280_data;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
