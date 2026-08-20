@@ -13,6 +13,7 @@ typedef struct {
     int16_t  dig_P7; int16_t  dig_P8; int16_t  dig_P9;
 } BMP280_calibrate_bytes_t;
 static BMP280_calibrate_bytes_t cb;
+static bool BMP280_is_init = false;
 
 //From BOSCH datasheet
 static int32_t t_fine;
@@ -62,10 +63,12 @@ bool bmp280_init(void) {
     cb.dig_P8 = (int16_t) (calib[20] | (calib[21] << 8));
     cb.dig_P9 = (int16_t) (calib[22] | (calib[23] << 8));
 
+    BMP280_is_init = true;
     return true;
 }
 
 bool bmp280_get_data(BMP280_Data_t *out_data) {
+    if (!BMP280_is_init) return false; //foolproofing
     //Transmit configuration
     uint8_t bmp280_config_data[2] = {0xF4, 0x4D}; // 0x010_011_01
     if (!i2c_transmit_data(BMP280_I2C, BMP280_I2C_ADDRESS, bmp280_config_data, sizeof(bmp280_config_data))){ return false; }
