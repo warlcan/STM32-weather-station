@@ -15,7 +15,7 @@ typedef struct {
 static BMP280_calibrate_bytes_t cb;
 static bool BMP280_is_init = false;
 
-//From BOSCH datasheet
+// Temperature compensation from BMP280 datasheet
 static int32_t t_fine;
 int32_t bmp280_compensate_T_int32(int32_t adc_T) {
     int32_t var1, var2, T;
@@ -26,7 +26,7 @@ int32_t bmp280_compensate_T_int32(int32_t adc_T) {
     T = (t_fine * 5 + 128) >> 8;
     return T;
 }
-
+// Pressure compensation from BMP280 datasheet
 uint32_t bmp280_compensate_P_int64(int32_t adc_P) {
     int64_t var1, var2, p;
     var1 = ((int64_t)t_fine) - 128000;
@@ -43,11 +43,9 @@ uint32_t bmp280_compensate_P_int64(int32_t adc_P) {
     p = ((p + var1 + var2) >> 8) + (((int64_t)cb.dig_P7)<<4);
     return (uint32_t)p;
 }
-//From BOSCH datasheet
 
-//Take calibration coefficients and writing to structure
 bool bmp280_init(void) {
-    uint8_t calib[24];
+    uint8_t calib[24]; //Receive compensation coefficients
     if (!i2c_receive_reg_data(BMP280_I2C, BMP280_I2C_ADDRESS, 0x88, calib, sizeof(calib))) return false;
 
     cb.dig_T1 = (uint16_t)(calib[0]  | (calib[1] << 8));
@@ -69,13 +67,14 @@ bool bmp280_init(void) {
 
 bool bmp280_get_data(BMP280_Data_t *out_data) {
     if (!BMP280_is_init) return false; //foolproofing
+
     //Transmit configuration
     uint8_t bmp280_config_data[2] = {0xF4, 0x4D}; // 0x010_011_01
     if (!i2c_transmit_data(BMP280_I2C, BMP280_I2C_ADDRESS, bmp280_config_data, sizeof(bmp280_config_data))){ return false; }
     
     LowPower_Delay(20);
 
-    //Receive measure
+    //Receive measurement data
     uint8_t measure_buffer[6];
     if (!i2c_receive_reg_data(BMP280_I2C, BMP280_I2C_ADDRESS, 0xF7, measure_buffer, sizeof(measure_buffer))){ return false; }
 
@@ -88,12 +87,12 @@ bool bmp280_get_data(BMP280_Data_t *out_data) {
                               (((uint32_t)(measure_buffer[4])) << 4)  | 
                               (((uint32_t)(measure_buffer[5])) >> 4));
     
-    //Calculation
+    //Compensation
     int32_t raw_temp = bmp280_compensate_T_int32(adc_T);
     uint32_t raw_press = bmp280_compensate_P_int64(adc_P);
 
     out_data->temperature = (float)raw_temp / 100.0f;
-    out_data->pressure = (float)(raw_press >> 8) / 100.0f;
+    out_data->pressure = (float)(raw_press >> 8) / 100.0f; //Q24.8 to hPa
 
     return true;
 }

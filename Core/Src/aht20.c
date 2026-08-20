@@ -20,7 +20,7 @@ bool aht20_get_data(AHT20_Data_t *out_data) {
     //Check errors
     if ((receive_data_buffer[0] & AHT20_STATUS_BUSY_BIT) != 0) return false;
     if ((receive_data_buffer[0] & AHT20_STATUS_CAL_BIT)  == 0) {
-        uint8_t calibrate_cmd_bytes[] = {0xBE, 0x08, 0x00};
+        uint8_t calibrate_cmd_bytes[] = {0xBE, 0x08, 0x00}; //Send calibrate command
         if(!i2c_transmit_data(AHT20_I2C, AHT20_I2C_ADDRESS, calibrate_cmd_bytes, 3)) return false;
         LowPower_Delay(AHT20_CALIBRATE_DELAY_MS);
         return false;

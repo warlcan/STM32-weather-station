@@ -40,7 +40,7 @@ bool i2c_receive_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *data_buffe
 }
 
 bool i2c_receive_reg_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_buffer, uint8_t data_size) {
-    //Transmit reg address
+    //Transmit register address
     LL_I2C_HandleTransfer(I2Cx, slave_addr, 
                         LL_I2C_ADDRSLAVE_7BIT, 1, 
                         LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
@@ -48,7 +48,7 @@ bool i2c_receive_reg_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t reg_add
     LL_I2C_TransmitData8(I2Cx, reg_addr);
     WAIT_I2C_FLAG(I2Cx, LL_I2C_IsActiveFlag_TC, I2C_TIMEOUT_MS);
 
-    //Receive reg data
+    //Receive register data
     LL_I2C_HandleTransfer(I2Cx, slave_addr,
                           LL_I2C_ADDRSLAVE_7BIT, data_size, 
                           LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);
