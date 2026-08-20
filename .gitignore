@@ -3,3 +3,4 @@ mx.scratch
 .settings/
 .clangd
 .mxproject
+.vscode/tasks.json
