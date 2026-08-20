@@ -6,24 +6,15 @@
 extern void LowPower_Delay(uint32_t Delay);
 
 typedef struct {
-    uint16_t dig_T1;
-    int16_t  dig_T2;
-    int16_t  dig_T3;
+    uint16_t dig_T1; int16_t  dig_T2; int16_t  dig_T3;
     
-    uint16_t dig_P1;
-    int16_t  dig_P2;
-    int16_t  dig_P3;
-    int16_t  dig_P4;
-    int16_t  dig_P5;
-    int16_t  dig_P6;
-    int16_t  dig_P7;
-    int16_t  dig_P8;
-    int16_t  dig_P9;
+    uint16_t dig_P1; int16_t  dig_P2; int16_t  dig_P3;
+    int16_t  dig_P4; int16_t  dig_P5; int16_t  dig_P6;
+    int16_t  dig_P7; int16_t  dig_P8; int16_t  dig_P9;
 } BMP280_calibrate_bytes_t;
-
 static BMP280_calibrate_bytes_t cb;
 
-//from bosch datasheet
+//From BOSCH datasheet
 static int32_t t_fine;
 int32_t bmp280_compensate_T_int32(int32_t adc_T) {
     int32_t var1, var2, T;
@@ -51,16 +42,16 @@ uint32_t bmp280_compensate_P_int64(int32_t adc_P) {
     p = ((p + var1 + var2) >> 8) + (((int64_t)cb.dig_P7)<<4);
     return (uint32_t)p;
 }
+//From BOSCH datasheet
 
+//Take calibration coefficients and writing to structure
 bool bmp280_init(void) {
     uint8_t calib[24];
-
-    if (!i2c_receive_reg_data(BMP280_I2C, BMP280_I2C_ADDRESS, 0x88, calib, sizeof(calib))) { return false; }
+    if (!i2c_receive_reg_data(BMP280_I2C, BMP280_I2C_ADDRESS, 0x88, calib, sizeof(calib))) return false;
 
     cb.dig_T1 = (uint16_t)(calib[0]  | (calib[1] << 8));
     cb.dig_T2 = (int16_t) (calib[2]  | (calib[3] << 8));
     cb.dig_T3 = (int16_t) (calib[4]  | (calib[5] << 8));
-
     cb.dig_P1 = (uint16_t)(calib[6]  | (calib[7] << 8));
     cb.dig_P2 = (int16_t) (calib[8]  | (calib[9] << 8));
     cb.dig_P3 = (int16_t) (calib[10] | (calib[11] << 8));
@@ -85,6 +76,7 @@ bool bmp280_get_data(BMP280_Data_t *out_data) {
     uint8_t measure_buffer[6];
     if (!i2c_receive_reg_data(BMP280_I2C, BMP280_I2C_ADDRESS, 0xF7, measure_buffer, sizeof(measure_buffer))){ return false; }
 
+    //Parsing
     int32_t adc_P = (int32_t)((((uint32_t)(measure_buffer[0])) << 12) | 
                               (((uint32_t)(measure_buffer[1])) << 4)  | 
                               (((uint32_t)(measure_buffer[2])) >> 4));
@@ -92,7 +84,8 @@ bool bmp280_get_data(BMP280_Data_t *out_data) {
     int32_t adc_T = (int32_t)((((uint32_t)(measure_buffer[3])) << 12) | 
                               (((uint32_t)(measure_buffer[4])) << 4)  | 
                               (((uint32_t)(measure_buffer[5])) >> 4));
-
+    
+    //Calculation
     int32_t raw_temp = bmp280_compensate_T_int32(adc_T);
     uint32_t raw_press = bmp280_compensate_P_int64(adc_P);
 
