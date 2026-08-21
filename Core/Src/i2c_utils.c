@@ -1,6 +1,7 @@
 #include "i2c_utils.h"
 
 extern volatile uint32_t system_ticks;
+#define I2C_TIMEOUT_MS 10
 
 #define WAIT_I2C_FLAG(I2Cx, target_func, timeout) do {      \
     uint32_t _start = system_ticks;                         \

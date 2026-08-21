@@ -1,6 +1,15 @@
 #include "aht20.h"
 
-extern void LowPower_Delay(uint32_t Delay); 
+extern void LowPower_Delay(uint32_t Delay);
+
+#define AHT20_I2C I2C1
+#define AHT20_I2C_ADDRESS 0x38 << 1
+
+#define AHT20_CALIBRATE_DELAY_MS 40
+#define AHT20_MEASURE_DELAY_MS 90
+
+#define AHT20_STATUS_BUSY_BIT  0x80
+#define AHT20_STATUS_CAL_BIT 0x08
 
 bool aht20_get_data(AHT20_Data_t *out_data) {
     //Clear flags
