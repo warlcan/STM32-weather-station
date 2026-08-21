@@ -49,6 +49,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/aht20.c
     Core/Src/bmp280.c
     Core/Src/i2c_utils.c
+    Core/Src/nrf24l01.c
 )
 
 # Add include paths
