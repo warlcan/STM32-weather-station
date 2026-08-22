@@ -24,6 +24,7 @@
 #include "SEGGER_RTT.h"
 #include "aht20.h"
 #include "bmp280.h"
+#include "nrf24l01.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
