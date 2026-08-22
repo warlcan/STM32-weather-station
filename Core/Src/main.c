@@ -83,6 +83,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
   AHT20_Data_t aht20_data;
   BMP280_Data_t bmp280_data;
+  NRF24_Data_t nrf24_data;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -111,7 +112,6 @@ int main(void)
   MX_SPI1_Init();
   
   /* USER CODE BEGIN 2 */
-  // LL_SPI_Enable(SPI1);
   DEBUG_RTT_Init();
   DEBUG_RTT_WriteString(0, "RTT initialized.\r\n");
   /* USER CODE END 2 */
@@ -299,7 +299,9 @@ static void MX_SPI1_Init(void)
   LL_SPI_Init(SPI1, &SPI_InitStruct);
   LL_SPI_SetStandard(SPI1, LL_SPI_PROTOCOL_MOTOROLA);
   /* USER CODE BEGIN SPI1_Init 2 */
-
+  LL_GPIO_SetPinPull(GPIOA, LL_GPIO_PIN_6, LL_GPIO_PULL_DOWN);
+  LL_SPI_Disable(SPI1);
+  LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_SPI1);
   /* USER CODE END SPI1_Init 2 */
 
 }
