@@ -104,6 +104,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
   SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
+  LL_mDelay(2000); //SWD escape window to prevent bricking
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
