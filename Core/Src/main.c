@@ -65,16 +65,12 @@ static void MX_SPI1_Init(void);
 #ifdef debug
 void DEBUG_RTT_WriteInt(int num);
 #endif
+void LowPower_Delay(uint32_t Delay);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void LowPower_Delay(uint32_t Delay) {
-    uint32_t start = system_ticks;
-    while ((system_ticks - start) < Delay) {
-        __WFI(); 
-    }
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -358,6 +354,13 @@ void DEBUG_RTT_WriteInt(int num) {
   DEBUG_RTT_PutChar(0, (num % 10) + '0');
 }
 #endif
+
+void LowPower_Delay(uint32_t Delay) {
+    uint32_t start = system_ticks;
+    while ((system_ticks - start) < Delay) {
+        __WFI(); 
+    }
+}
 /* USER CODE END 4 */
 
 /**
