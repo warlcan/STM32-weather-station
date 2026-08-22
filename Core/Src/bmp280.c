@@ -1,7 +1,7 @@
 #include "bmp280.h"
 
-#define BMP280_I2C I2C1
-#define BMP280_I2C_ADDRESS (0x77 << 1)
+#define BMP280_I2C              I2C1
+#define BMP280_I2C_ADDRESS      (0x77 << 1)
 #define BMP280_MEASURE_DELAY_MS 20
 
 extern void LowPower_Delay(uint32_t Delay);
