@@ -76,10 +76,10 @@ void i2c_stop(void) {
 
 void i2c_start(void) {
     //Reset triggers
-    LL_APB1_GRP1_ForceDeviceReset(LL_APB1_GRP1_PERIPH_I2C1);
+    LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_I2C1);
     __asm("nop");
     __asm("nop");
-    LL_APB1_GRP1_ReleaseDeviceReset(LL_APB1_GRP1_PERIPH_I2C1);
+    LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C1);
 
     MX_I2C1_Init();
 }

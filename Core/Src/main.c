@@ -59,8 +59,8 @@ volatile uint32_t system_ticks = 0;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_I2C1_Init(void);
-static void MX_SPI1_Init(void);
+void MX_I2C1_Init(void);
+void MX_SPI1_Init(void);
 
 /* USER CODE BEGIN PFP */
 #ifdef debug
@@ -116,8 +116,8 @@ int main(void)
   DEBUG_RTT_Init();
   DEBUG_RTT_WriteString(0, "RTT initialized.\r\n");
 
-  nrf24_init();
-  bmp280_init();
+  nrf24_init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
+  bmp280_init();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -128,21 +128,23 @@ int main(void)
   
   /* USER CODE BEGIN 3 */
   if(!aht20_get_data(&aht20_data)) {
-    DEBUG_RTT_WriteString(0, "aht20 error");
+    DEBUG_RTT_WriteString(0, "aht20 error\n");
     continue;
   }
+  DEBUG_RTT_WriteString(0, "aht20 OK\n");
   if(!bmp280_get_data(&bmp280_data)) {
-    DEBUG_RTT_WriteString(0, "bmp280 error");
+    DEBUG_RTT_WriteString(0, "bmp280 error\n");
     continue;
   }
+  DEBUG_RTT_WriteString(0, "bmp280 OK\n");
   
   nrf24_data.temperature = aht20_data.temperature;
   nrf24_data.humidity    = aht20_data.humidity;
   nrf24_data.pressure    = bmp280_data.pressure;
 
   DEBUG_RTT_WriteInt(nrf24_data.temperature); DEBUG_RTT_PutChar(0, '\n');
-  DEBUG_RTT_WriteInt(nrf24_data.humidity); DEBUG_RTT_PutChar(0, '\n');
-  DEBUG_RTT_WriteInt(nrf24_data.pressure); DEBUG_RTT_PutChar(0, '\n');
+  DEBUG_RTT_WriteInt(nrf24_data.humidity);    DEBUG_RTT_PutChar(0, '\n');
+  DEBUG_RTT_WriteInt(nrf24_data.pressure);    DEBUG_RTT_PutChar(0, '\n');
 
   if(!nrf24_transmit_data(&nrf24_data)) {
     DEBUG_RTT_WriteString(0, "nrf24 error\n");
@@ -200,7 +202,7 @@ void SystemClock_Config(void)
   * @param None
   * @retval None
   */
-static void MX_I2C1_Init(void)
+void MX_I2C1_Init(void)
 {
 
   /* USER CODE BEGIN I2C1_Init 0 */
@@ -265,7 +267,7 @@ static void MX_I2C1_Init(void)
   * @param None
   * @retval None
   */
-static void MX_SPI1_Init(void)
+void MX_SPI1_Init(void)
 {
 
   /* USER CODE BEGIN SPI1_Init 0 */
@@ -327,8 +329,6 @@ static void MX_SPI1_Init(void)
   LL_SPI_SetStandard(SPI1, LL_SPI_PROTOCOL_MOTOROLA);
   /* USER CODE BEGIN SPI1_Init 2 */
   LL_GPIO_SetPinPull(GPIOA, LL_GPIO_PIN_6, LL_GPIO_PULL_DOWN);
-  LL_SPI_Disable(SPI1);
-  LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_SPI1);
   /* USER CODE END SPI1_Init 2 */
 
 }

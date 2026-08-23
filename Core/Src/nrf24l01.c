@@ -79,6 +79,7 @@ static void nrf24_stop(void){
 
 static void nrf24_start() {
     MX_SPI1_Init();
+    LL_SPI_Enable(NRF24_SPI);  
 }
 
 void nrf24_init(void){
