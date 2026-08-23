@@ -71,13 +71,18 @@ static void nrf24_stop(void){
     __asm("nop");
     __asm("nop");
     LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_SPI1);
+
+    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_5, LL_GPIO_MODE_ANALOG);
+    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_6, LL_GPIO_MODE_ANALOG);
+    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_7, LL_GPIO_MODE_ANALOG);
+}
+
+static void nrf24_start() {
+    MX_SPI1_Init();
 }
 
 void nrf24_init(void){
-    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SPI1);
-    __asm("nop");
-    __asm("nop");
-    LL_SPI_Enable(NRF24_SPI);  
+    nrf24_start();
 
     LL_GPIO_ResetOutputPin(NRF_CE_GPIO_Port, NRF_CE_Pin);
     LL_GPIO_SetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
@@ -99,10 +104,7 @@ void nrf24_init(void){
 bool nrf24_transmit_data(NRF24_Data_t *nrf24_data) {
     uint8_t nrf24_data_size = sizeof(NRF24_Data_t);
     
-    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SPI1);
-    __asm("nop");
-    __asm("nop");
-    LL_SPI_Enable(NRF24_SPI);  
+    nrf24_start();
 
     nrf24_spi_set_reg(NRF24_REG_ADDR_CONFIG, 0x0E);
     LowPower_Delay(NRF24_ON_DELAY_MS);

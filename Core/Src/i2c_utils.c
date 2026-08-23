@@ -61,3 +61,25 @@ bool i2c_receive_reg_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t reg_add
     WAIT_I2C_FLAG(I2Cx, LL_I2C_IsActiveFlag_STOP, I2C_TIMEOUT_MS);
     return true;
 }
+
+void i2c_stop(void) {
+    while(LL_I2C_IsActiveFlag_BUSY(I2C1)); 
+    
+    LL_I2C_Disable(I2C1);
+    __asm("nop");
+    __asm("nop");
+    LL_APB1_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_I2C1);
+    
+    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_9, LL_GPIO_MODE_ANALOG);
+    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_10, LL_GPIO_MODE_ANALOG);
+}
+
+void i2c_start(void) {
+    //Reset triggers
+    LL_APB1_GRP1_ForceDeviceReset(LL_APB1_GRP1_PERIPH_I2C1);
+    __asm("nop");
+    __asm("nop");
+    LL_APB1_GRP1_ReleaseDeviceReset(LL_APB1_GRP1_PERIPH_I2C1);
+
+    MX_I2C1_Init();
+}
