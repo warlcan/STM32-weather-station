@@ -129,33 +129,35 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  if(!aht20_get_data(&aht20_data)) {
-    DEBUG_RTT_WriteString(0, "aht20 error\n");
-    continue;
-  }
-  DEBUG_RTT_WriteString(0, "aht20 OK\n");
-  if(!bmp280_get_data(&bmp280_data)) {
-    DEBUG_RTT_WriteString(0, "bmp280 error\n");
-    continue;
-  }
-  DEBUG_RTT_WriteString(0, "bmp280 OK\n");
-  
-  nrf24_data.temperature = aht20_data.temperature;
-  nrf24_data.humidity    = aht20_data.humidity;
-  nrf24_data.pressure    = bmp280_data.pressure;
+    i2c_start();
+    if(!aht20_get_data(&aht20_data)) {
+      DEBUG_RTT_WriteString(0, "aht20 error\n");
+      continue;
+    }
+    DEBUG_RTT_WriteString(0, "aht20 OK\n");
+    if(!bmp280_get_data(&bmp280_data)) {
+      DEBUG_RTT_WriteString(0, "bmp280 error\n");
+      continue;
+    }
+    DEBUG_RTT_WriteString(0, "bmp280 OK\n");
+    i2c_stop();
+    nrf24_data.temperature = aht20_data.temperature;
+    nrf24_data.humidity    = aht20_data.humidity;
+    nrf24_data.pressure    = bmp280_data.pressure;
 
-  DEBUG_RTT_WriteInt(nrf24_data.temperature); DEBUG_RTT_PutChar(0, '\n');
-  DEBUG_RTT_WriteInt(nrf24_data.humidity);    DEBUG_RTT_PutChar(0, '\n');
-  DEBUG_RTT_WriteInt(nrf24_data.pressure);    DEBUG_RTT_PutChar(0, '\n');
+    DEBUG_RTT_WriteInt(nrf24_data.temperature); DEBUG_RTT_PutChar(0, '\n');
+    DEBUG_RTT_WriteInt(nrf24_data.humidity);    DEBUG_RTT_PutChar(0, '\n');
+    DEBUG_RTT_WriteInt(nrf24_data.pressure);    DEBUG_RTT_PutChar(0, '\n');
 
-  if(!nrf24_transmit_data(&nrf24_data)) {
-    DEBUG_RTT_WriteString(0, "nrf24 error\n");
-    continue;
+    if(!nrf24_transmit_data(&nrf24_data)) {
+      DEBUG_RTT_WriteString(0, "nrf24 error\n");
+      continue;
+    }
+    DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
+
+    LL_mDelay(5000);
+    /* USER CODE END 3 */
   }
-  DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
-
-  LL_mDelay(5000);
-  /* USER CODE END 3 */
 }
 
 /**
