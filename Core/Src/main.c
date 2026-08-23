@@ -21,6 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32l0xx_ll_pwr.h"
+#include "stm32l0xx_ll_exti.h"
+#include "stm32l0xx_ll_cortex.h"
 #include "SEGGER_RTT.h"
 #include "aht20.h"
 #include "bmp280.h"
@@ -118,6 +121,21 @@ int main(void)
   DEBUG_RTT_Init();
   DEBUG_RTT_WriteString(0, "RTT initialized.\r\n");
 
+  LL_RTC_DisableWriteProtection(RTC);
+  LL_RTC_WAKEUP_Disable(RTC);
+  while (!LL_RTC_IsActiveFlag_WUTW(RTC));
+  LL_RTC_WAKEUP_SetClock(RTC,LL_RTC_WAKEUPCLOCK_CKSPRE);
+  LL_RTC_WAKEUP_SetAutoReload(RTC, 599); // 10 min
+  LL_RTC_EnableIT_WUT(RTC);
+  LL_RTC_WAKEUP_Enable(RTC);
+  LL_RTC_EnableWriteProtection(RTC);
+  
+  LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_20);
+  LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_20);
+
+  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_DBGMCU);
+  SET_BIT(DBGMCU->APB1FZ, DBGMCU_APB1_FZ_DBG_IWDG_STOP);
+
   nrf24_init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
   bmp280_init();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
   /* USER CODE END 2 */
@@ -155,7 +173,16 @@ int main(void)
     }
     DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
 
-    LL_mDelay(5000);
+    NVIC_ClearPendingIRQ(SysTick_IRQn);
+
+    LL_SYSTICK_DisableIT();
+    LL_PWR_SetPowerMode(LL_PWR_MODE_STOP);
+    LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_LOW_POWER);
+    LL_LPM_EnableDeepSleep();
+    __WFI();
+    LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_MAIN);
+    LL_SYSTICK_EnableIT();
+    
     /* USER CODE END 3 */
   }
 }
