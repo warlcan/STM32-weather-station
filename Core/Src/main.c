@@ -89,6 +89,7 @@ int main(void)
   AHT20_Data_t aht20_data;
   BMP280_Data_t bmp280_data;
   NRF24_Data_t nrf24_data;
+  uint32_t wakeup_counter = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -134,17 +135,16 @@ int main(void)
   LL_RTC_DisableWriteProtection(RTC);
   LL_RTC_WAKEUP_Disable(RTC);
   while (!LL_RTC_IsActiveFlag_WUTW(RTC));
+
   LL_RTC_WAKEUP_SetClock(RTC,LL_RTC_WAKEUPCLOCK_CKSPRE);
-  LL_RTC_WAKEUP_SetAutoReload(RTC, 599); // 10 min
+  LL_RTC_WAKEUP_SetAutoReload(RTC, 24);
+
   LL_RTC_EnableIT_WUT(RTC);
   LL_RTC_WAKEUP_Enable(RTC);
   LL_RTC_EnableWriteProtection(RTC);
   
   LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_20);
   LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_20);
-
-  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_DBGMCU);
-  SET_BIT(DBGMCU->APB1FZ, DBGMCU_APB1_FZ_DBG_IWDG_STOP);
 
   nrf24_init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
   bmp280_init();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
