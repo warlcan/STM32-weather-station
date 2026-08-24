@@ -121,6 +121,13 @@ int main(void)
   DEBUG_RTT_Init();
   DEBUG_RTT_WriteString(0, "RTT initialized.\r\n");
 
+  #ifdef debug
+  DEBUG_RTT_WriteString(0, "RCC-CSR: 0x");
+  DEBUG_RTT_WriteInt(RCC->CSR);
+  DEBUG_RTT_PutChar(0, '\n');
+  LL_mDelay(1000);
+  #endif
+
   LL_RTC_DisableWriteProtection(RTC);
   LL_RTC_WAKEUP_Disable(RTC);
   while (!LL_RTC_IsActiveFlag_WUTW(RTC));
