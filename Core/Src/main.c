@@ -160,15 +160,17 @@ int main(void)
     i2c_start();
     if(!aht20_get_data(&aht20_data)) {
       DEBUG_RTT_WriteString(0, "aht20 error\n");
-      continue;
+    } else {
+      DEBUG_RTT_WriteString(0, "aht20 OK\n");
     }
-    DEBUG_RTT_WriteString(0, "aht20 OK\n");
     if(!bmp280_get_data(&bmp280_data)) {
       DEBUG_RTT_WriteString(0, "bmp280 error\n");
-      continue;
+    } else {
+      DEBUG_RTT_WriteString(0, "bmp280 OK\n");
     }
-    DEBUG_RTT_WriteString(0, "bmp280 OK\n");
     i2c_stop();
+
+
     nrf24_data.temperature = aht20_data.temperature;
     nrf24_data.humidity    = aht20_data.humidity;
     nrf24_data.pressure    = bmp280_data.pressure;
