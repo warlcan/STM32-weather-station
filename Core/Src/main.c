@@ -183,21 +183,33 @@ int main(void)
 
     if(!nrf24_transmit_data(&nrf24_data)) {
       DEBUG_RTT_WriteString(0, "nrf24 error\n");
-      continue;
+    } else {
+      DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
     }
-    DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
-
-    LowPower_Delay(40000);
-    // NVIC_ClearPendingIRQ(SysTick_IRQn);
-
-    // LL_SYSTICK_DisableIT();
-    // LL_PWR_SetPowerMode(LL_PWR_MODE_STOP);
-    // LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_LOW_POWER);
-    // LL_LPM_EnableDeepSleep();
-    // __WFI();
-    // LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_MAIN);
-    // LL_SYSTICK_EnableIT();
     
+
+    wakeup_counter = 0;
+    while (wakeup_counter < 2) {
+      
+      LL_IWDG_ReloadCounter(IWDG);
+      LL_SYSTICK_DisableIT();
+
+      LL_PWR_SetPowerMode(LL_PWR_MODE_STOP);
+      LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_LOW_POWER);
+      LL_LPM_EnableDeepSleep();
+
+      __WFI();
+
+      LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_MAIN);
+      LL_SYSTICK_EnableIT(); 
+      
+      if (LL_RTC_IsActiveFlag_WUT(RTC)) {
+        LL_RTC_ClearFlag_WUT(RTC);
+      }
+      LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_20);
+
+      wakeup_counter++;
+    }
   /* USER CODE END 3 */
   }
 }
