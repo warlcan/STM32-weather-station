@@ -66,6 +66,7 @@ static void MX_GPIO_Init(void);
 void MX_I2C1_Init(void);
 void MX_SPI1_Init(void);
 static void MX_RTC_Init(void);
+static void MX_IWDG_Init(void);
 /* USER CODE BEGIN PFP */
 #ifdef debug
 void DEBUG_RTT_WriteInt(int num);
@@ -118,6 +119,7 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI1_Init();
   MX_RTC_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
   LL_PWR_EnableUltraLowPower();
 
@@ -196,7 +198,7 @@ int main(void)
     // LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_MAIN);
     // LL_SYSTICK_EnableIT();
     
-    /* USER CODE END 3 */
+  /* USER CODE END 3 */
   }
 }
 
@@ -317,6 +319,36 @@ void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief IWDG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_IWDG_Init(void)
+{
+
+  /* USER CODE BEGIN IWDG_Init 0 */
+
+  /* USER CODE END IWDG_Init 0 */
+
+  /* USER CODE BEGIN IWDG_Init 1 */
+
+  /* USER CODE END IWDG_Init 1 */
+  LL_IWDG_Enable(IWDG);
+  LL_IWDG_EnableWriteAccess(IWDG);
+  LL_IWDG_SetPrescaler(IWDG, LL_IWDG_PRESCALER_256);
+  LL_IWDG_SetReloadCounter(IWDG, 4095);
+  while (LL_IWDG_IsReady(IWDG) != 1)
+  {
+  }
+
+  LL_IWDG_ReloadCounter(IWDG);
+  /* USER CODE BEGIN IWDG_Init 2 */
+
+  /* USER CODE END IWDG_Init 2 */
 
 }
 
