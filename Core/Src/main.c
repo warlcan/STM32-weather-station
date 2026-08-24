@@ -118,6 +118,8 @@ int main(void)
   MX_SPI1_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
+  LL_PWR_EnableUltraLowPower();
+
   DEBUG_RTT_Init();
   DEBUG_RTT_WriteString(0, "RTT initialized.\r\n");
 
@@ -126,6 +128,7 @@ int main(void)
   DEBUG_RTT_WriteInt(RCC->CSR);
   DEBUG_RTT_PutChar(0, '\n');
   LL_mDelay(1000);
+  RCC->CSR |= RCC_CSR_RMVF;
   #endif
 
   LL_RTC_DisableWriteProtection(RTC);
@@ -180,15 +183,16 @@ int main(void)
     }
     DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
 
-    NVIC_ClearPendingIRQ(SysTick_IRQn);
+    LowPower_Delay(40000);
+    // NVIC_ClearPendingIRQ(SysTick_IRQn);
 
-    LL_SYSTICK_DisableIT();
-    LL_PWR_SetPowerMode(LL_PWR_MODE_STOP);
-    LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_LOW_POWER);
-    LL_LPM_EnableDeepSleep();
-    __WFI();
-    LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_MAIN);
-    LL_SYSTICK_EnableIT();
+    // LL_SYSTICK_DisableIT();
+    // LL_PWR_SetPowerMode(LL_PWR_MODE_STOP);
+    // LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_LOW_POWER);
+    // LL_LPM_EnableDeepSleep();
+    // __WFI();
+    // LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_MAIN);
+    // LL_SYSTICK_EnableIT();
     
     /* USER CODE END 3 */
   }
