@@ -64,7 +64,7 @@ static void nrf24_spi_transmit_buf(uint8_t reg, uint8_t *buf, uint8_t buf_size) 
 }
 
 static void nrf24_stop(void){
-    nrf24_spi_set_reg(NRF24_REG_ADDR_CONFIG, 0x0C);
+    nrf24_spi_set_reg(NRF24_REG_ADDR_CONFIG, 0x00);
 
     while(LL_SPI_IsActiveFlag_BSY(NRF24_SPI)); 
     LL_SPI_Disable(NRF24_SPI);
