@@ -79,6 +79,8 @@ void MX_I2C1_Init(void);
 #define NRF_CSN_GPIO_Port GPIOA
 #define NRF_CE_Pin LL_GPIO_PIN_4
 #define NRF_CE_GPIO_Port GPIOA
+#define SENSOR_VDD_Pin LL_GPIO_PIN_1
+#define SENSOR_VDD_GPIO_Port GPIOB
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */
