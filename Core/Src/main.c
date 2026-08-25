@@ -37,7 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define debug
+// #define debug
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -149,7 +149,12 @@ int main(void)
   LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_20);
 
   nrf24_init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
+  LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_OUTPUT);
+  LL_GPIO_SetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
+  LowPower_Delay(100);
   bmp280_init();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
+  LL_GPIO_ResetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
+  LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_ANALOG);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -159,6 +164,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_OUTPUT);
+    LL_GPIO_SetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
+    LowPower_Delay(50);
     i2c_start();
     if(!aht20_get_data(&aht20_data)) {
       DEBUG_RTT_WriteString(0, "aht20 error\n");
@@ -171,7 +179,8 @@ int main(void)
       DEBUG_RTT_WriteString(0, "bmp280 OK\n");
     }
     i2c_stop();
-
+    LL_GPIO_ResetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
+    LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_ANALOG);
 
     nrf24_data.temperature = aht20_data.temperature;
     nrf24_data.humidity    = aht20_data.humidity;
