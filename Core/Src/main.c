@@ -44,8 +44,8 @@
 /* USER CODE BEGIN PM */
 #ifdef debug
     #define DEBUG_RTT_Init()                        SEGGER_RTT_Init()        
-    #define DEBUG_RTT_WriteString(buffer_index, s)  SEGGER_RTT_WriteString(port, s)
-    #define DEBUG_RTT_PutChar(buffer_index, s)      SEGGER_RTT_PutChar(port, s)
+    #define DEBUG_RTT_WriteString(buffer_index, s)  SEGGER_RTT_WriteString(buffer_index, s)
+    #define DEBUG_RTT_PutChar(buffer_index, s)      SEGGER_RTT_PutChar(buffer_index, s)
 #else
     #define DEBUG_RTT_Init()
     #define DEBUG_RTT_WriteInt(buffer_index, num)
@@ -69,14 +69,22 @@ static void MX_RTC_Init(void);
 static void MX_IWDG_Init(void);
 /* USER CODE BEGIN PFP */
 #ifdef debug
-void DEBUG_RTT_WriteInt(uint8_t buffer_index, int num)
+void DEBUG_RTT_WriteInt(uint8_t buffer_index, int num);
 #endif
 void LowPower_Delay(uint32_t Delay);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+static inline void sensor_power_on(){
+  LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_OUTPUT);
+  LL_GPIO_SetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
+  LowPower_Delay(50);
+}
+static inline void sensor_power_off(){
+  LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_ANALOG);
+  LL_GPIO_ResetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
+}
 /* USER CODE END 0 */
 
 /**
@@ -128,7 +136,7 @@ int main(void)
 
   #ifdef debug
   DEBUG_RTT_WriteString(0, "RCC-CSR: 0x");
-  DEBUG_RTT_WriteInt(RCC->CSR);
+  DEBUG_RTT_WriteInt(0, RCC->CSR);
   DEBUG_RTT_PutChar(0, '\n');
   LL_mDelay(1000);
   RCC->CSR |= RCC_CSR_RMVF;
@@ -139,7 +147,7 @@ int main(void)
   while (!LL_RTC_IsActiveFlag_WUTW(RTC));
 
   LL_RTC_WAKEUP_SetClock(RTC,LL_RTC_WAKEUPCLOCK_CKSPRE);
-  LL_RTC_WAKEUP_SetAutoReload(RTC, 24);
+  LL_RTC_WAKEUP_SetAutoReload(RTC, 19);
 
   LL_RTC_EnableIT_WUT(RTC);
   LL_RTC_WAKEUP_Enable(RTC);
@@ -149,12 +157,9 @@ int main(void)
   LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_20);
 
   nrf24_init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
-  LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_OUTPUT);
-  LL_GPIO_SetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
-  LowPower_Delay(100);
+  sensor_power_on();
   bmp280_init();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
-  LL_GPIO_ResetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
-  LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_ANALOG);
+  sensor_power_off();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -164,9 +169,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_OUTPUT);
-    LL_GPIO_SetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
-    LowPower_Delay(50);
+    sensor_power_on();
     i2c_start();
     if(!aht20_get_data(&aht20_data)) {
       DEBUG_RTT_WriteString(0, "aht20 error\n");
@@ -179,26 +182,23 @@ int main(void)
       DEBUG_RTT_WriteString(0, "bmp280 OK\n");
     }
     i2c_stop();
-    LL_GPIO_ResetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
-    LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_ANALOG);
+    sensor_power_off();
 
     nrf24_data.temperature = aht20_data.temperature;
     nrf24_data.humidity    = aht20_data.humidity;
     nrf24_data.pressure    = bmp280_data.pressure;
-
-    DEBUG_RTT_WriteInt(0, nrf24_data.temperature); DEBUG_RTT_PutChar(0, '\n');
-    DEBUG_RTT_WriteInt(0, nrf24_data.humidity);    DEBUG_RTT_PutChar(0, '\n');
-    DEBUG_RTT_WriteInt(0, nrf24_data.pressure);    DEBUG_RTT_PutChar(0, '\n');
 
     if(!nrf24_transmit_data(&nrf24_data)) {
       DEBUG_RTT_WriteString(0, "nrf24 error\n");
     } else {
       DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
     }
-    
+    #ifdef debug
+    while (SEGGER_RTT_HasDataUp(0) != 0);
+    #endif
 
     wakeup_counter = 0;
-    while (wakeup_counter < 2) {
+    while (wakeup_counter < 30) {
       
       LL_IWDG_ReloadCounter(IWDG);
       LL_SYSTICK_DisableIT();
