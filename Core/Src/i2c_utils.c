@@ -1,6 +1,6 @@
 #include "i2c_utils.h"
 
-#define I2C_TIMEOUT_MS 10
+#define I2C_TIMEOUT_MS 20
 
 extern volatile uint32_t system_ticks;
 
@@ -66,8 +66,6 @@ void i2c_stop(void) {
     while(LL_I2C_IsActiveFlag_BUSY(I2C1)); 
     
     LL_I2C_Disable(I2C1);
-    __asm("nop");
-    __asm("nop");
     LL_APB1_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_I2C1);
     
     LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_9, LL_GPIO_MODE_ANALOG);
@@ -77,8 +75,6 @@ void i2c_stop(void) {
 void i2c_start(void) {
     //Reset triggers
     LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_I2C1);
-    __asm("nop");
-    __asm("nop");
     LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C1);
 
     MX_I2C1_Init();

@@ -68,8 +68,6 @@ static void nrf24_stop(void){
 
     while(LL_SPI_IsActiveFlag_BSY(NRF24_SPI)); 
     LL_SPI_Disable(NRF24_SPI);
-    __asm("nop");
-    __asm("nop");
     LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_SPI1);
 
     LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_5, LL_GPIO_MODE_OUTPUT);
