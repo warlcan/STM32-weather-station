@@ -137,7 +137,7 @@ int main(void)
 
   LL_RTC_DisableWriteProtection(RTC);
   LL_RTC_WAKEUP_Disable(RTC);
-  while (!LL_RTC_IsActiveFlag_WUTW(RTC));
+  WAIT_FLAG(LL_RTC_IsActiveFlag_WUTW(RTC), 10);
   LL_RTC_WAKEUP_SetClock(RTC,LL_RTC_WAKEUPCLOCK_CKSPRE);
   LL_RTC_WAKEUP_SetAutoReload(RTC, 19);
   LL_RTC_EnableIT_WUT(RTC);

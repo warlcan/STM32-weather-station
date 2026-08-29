@@ -17,7 +17,11 @@
 #define NRF24_ON_DELAY_MS          2
 #define NRF24_CE_DELAY_US          20
 
+#define I2C_FLAG_BUSY_TIMEOUT      20
+
 extern volatile uint32_t system_ticks;
+
+// === SYSTEM ===
 
 void LowPower_Delay(uint32_t Delay) {
     uint32_t start = system_ticks;
@@ -48,7 +52,7 @@ void i2c_start(void) {
 }
 
 void i2c_stop(void) {
-    while(LL_I2C_IsActiveFlag_BUSY(I2C1)); 
+    WAIT_FLAG(!LL_I2C_IsActiveFlag_BUSY(I2C1), I2C_FLAG_BUSY_TIMEOUT); 
     
     LL_I2C_Disable(I2C1);
     LL_APB1_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_I2C1);
@@ -95,4 +99,3 @@ void periph_mode_sleep(){
     spi_stop();
     sensors_power_off();
 }
-

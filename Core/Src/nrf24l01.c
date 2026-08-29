@@ -16,6 +16,8 @@
 #define NRF24_ON_DELAY_MS          2
 #define NRF24_CE_DELAY_US          20
 
+#define SPI_TIMEOUT                5
+
 //US delay for 2.1 MHz
 #define NRF24_DELAY_US(us) do { \
     volatile uint32_t cycles = ((us) * 7) / 10; \
@@ -30,10 +32,10 @@ static uint8_t spi_transmit_byte(uint8_t data) {
         LL_SPI_ReceiveData8(NRF24_SPI);
     }
     
-    while(!LL_SPI_IsActiveFlag_TXE(NRF24_SPI));
+    WAIT_FLAG(LL_SPI_IsActiveFlag_TXE(NRF24_SPI), SPI_TIMEOUT);
     LL_SPI_TransmitData8(NRF24_SPI, data);
     
-    while(!LL_SPI_IsActiveFlag_RXNE(NRF24_SPI));
+    WAIT_FLAG(LL_SPI_IsActiveFlag_RXNE(NRF24_SPI), SPI_TIMEOUT);
     return LL_SPI_ReceiveData8(NRF24_SPI);
 }
 
@@ -99,12 +101,10 @@ bool nrf24_transmit_data(NRF24_Data_t *nrf24_data) {
 
     LowPower_Delay(1);
 
-    volatile uint16_t timeout = 60000;
-    while(!(nrf24_spi_read_reg(NRF24_REG_ADDR_STATUS)& 0x20)) {
-        if(timeout-- == 0) {
+    if(!WAIT_FLAG(nrf24_spi_read_reg(NRF24_REG_ADDR_STATUS) & 0x20, SPI_TIMEOUT)) {
             nrf24_spi_set_reg(NRF24_REG_ADDR_STATUS, 0x70);
+            nrf24_spi_cmd(NRF24_CMD_TX_CLEAR);
             return false;
-        }
     }
 
     nrf24_spi_set_reg(NRF24_REG_ADDR_STATUS, 0x20);

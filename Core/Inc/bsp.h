@@ -2,6 +2,19 @@
 #define BSP_H
 
 #include "main.h"
+#include <stdbool.h>
+
+#define WAIT_FLAG(wait_flag_function, timeout) ({\
+    uint32_t _start = system_ticks;              \
+    bool _result = true;                         \
+    while (!(wait_flag_function)) {              \
+        if(system_ticks - _start >= timeout) {   \
+            _result = false;                     \
+            break;                               \
+        }                                        \
+    }                                            \
+    _result;                                     \
+})
 
 void periph_mode_active();
 void periph_mode_sleep();
