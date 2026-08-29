@@ -9,7 +9,6 @@
 #define NRF24_REG_ADDR_RF_CH       0x05
 #define NRF24_REG_ADDR_RF_SETUP    0x06
 #define NRF24_REG_ADDR_STATUS      0x07
-#define NRF24_REG_ADDR_FIFO_STATUS 0x17
 
 #define NRF24_CMD_TX_WRITE_PAYLOAD 0xA0
 #define NRF24_CMD_TX_CLEAR         0xE1
@@ -63,34 +62,7 @@ static void nrf24_spi_transmit_buf(uint8_t reg, uint8_t *buf, uint8_t buf_size) 
     LL_GPIO_SetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
 }
 
-static void nrf24_stop(void){
-    nrf24_spi_set_reg(NRF24_REG_ADDR_CONFIG, 0x00);
-
-    while(LL_SPI_IsActiveFlag_BSY(NRF24_SPI)); 
-    LL_SPI_Disable(NRF24_SPI);
-    LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_SPI1);
-
-    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_5, LL_GPIO_MODE_OUTPUT);
-    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_6, LL_GPIO_MODE_OUTPUT);
-    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_7, LL_GPIO_MODE_OUTPUT);
-
-    LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
-    LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6);
-    LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_7);
-    
-    LL_GPIO_SetPinPull(GPIOA, LL_GPIO_PIN_5, LL_GPIO_PULL_NO);
-    LL_GPIO_SetPinPull(GPIOA, LL_GPIO_PIN_6, LL_GPIO_PULL_NO);
-    LL_GPIO_SetPinPull(GPIOA, LL_GPIO_PIN_7, LL_GPIO_PULL_NO);
-}
-
-static void nrf24_start() {
-    MX_SPI1_Init();
-    LL_SPI_Enable(NRF24_SPI);  
-}
-
 void nrf24_init(void){
-    nrf24_start();
-
     LL_GPIO_ResetOutputPin(NRF_CE_GPIO_Port, NRF_CE_Pin);
     LL_GPIO_SetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
 
@@ -104,14 +76,10 @@ void nrf24_init(void){
     nrf24_spi_transmit_buf(0x20 | 0x10, addr, 5);
 
     nrf24_spi_set_reg(NRF24_REG_ADDR_STATUS, 0x70);
-
-    nrf24_stop();
 }
 
 bool nrf24_transmit_data(NRF24_Data_t *nrf24_data) {
     uint8_t nrf24_data_size = sizeof(NRF24_Data_t);
-    
-    nrf24_start();
 
     nrf24_spi_set_reg(NRF24_REG_ADDR_CONFIG, 0x0E);
     LowPower_Delay(NRF24_ON_DELAY_MS);
@@ -135,13 +103,12 @@ bool nrf24_transmit_data(NRF24_Data_t *nrf24_data) {
     while(!(nrf24_spi_read_reg(NRF24_REG_ADDR_STATUS)& 0x20)) {
         if(timeout-- == 0) {
             nrf24_spi_set_reg(NRF24_REG_ADDR_STATUS, 0x70);
-            nrf24_stop();
             return false;
         }
     }
 
     nrf24_spi_set_reg(NRF24_REG_ADDR_STATUS, 0x20);
-    nrf24_stop();
-
+    nrf24_spi_set_reg(NRF24_REG_ADDR_CONFIG, 0x00);
+    while(LL_SPI_IsActiveFlag_BSY(NRF24_SPI));
     return true;
 }

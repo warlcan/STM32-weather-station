@@ -10,7 +10,4 @@ bool i2c_transmit_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *cmd_data,
 bool i2c_receive_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *data_buffer, uint8_t data_size);
 bool i2c_receive_reg_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_buffer, uint8_t data_size);
 
-void i2c_stop(void);
-void i2c_start(void);
-
 #endif

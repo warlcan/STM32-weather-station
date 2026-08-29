@@ -28,6 +28,7 @@
 #include "aht20.h"
 #include "bmp280.h"
 #include "nrf24l01.h"
+#include "bsp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -76,15 +77,7 @@ void LowPower_Delay(uint32_t Delay);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static inline void sensor_power_on(){
-  LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_OUTPUT);
-  LL_GPIO_SetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
-  LowPower_Delay(50);
-}
-static inline void sensor_power_off(){
-  LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_ANALOG);
-  LL_GPIO_ResetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -145,10 +138,8 @@ int main(void)
   LL_RTC_DisableWriteProtection(RTC);
   LL_RTC_WAKEUP_Disable(RTC);
   while (!LL_RTC_IsActiveFlag_WUTW(RTC));
-
   LL_RTC_WAKEUP_SetClock(RTC,LL_RTC_WAKEUPCLOCK_CKSPRE);
   LL_RTC_WAKEUP_SetAutoReload(RTC, 19);
-
   LL_RTC_EnableIT_WUT(RTC);
   LL_RTC_WAKEUP_Enable(RTC);
   LL_RTC_EnableWriteProtection(RTC);
@@ -156,10 +147,10 @@ int main(void)
   LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_20);
   LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_20);
 
+  periph_mode_active();
   nrf24_init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
-  sensor_power_on();
   bmp280_init();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
-  sensor_power_off();
+  periph_mode_sleep();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -169,8 +160,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    sensor_power_on();
-    i2c_start();
+    periph_mode_active();
     if(!aht20_get_data(&aht20_data)) {
       DEBUG_RTT_WriteString(0, "aht20 error\n");
     } else {
@@ -181,8 +171,6 @@ int main(void)
     } else {
       DEBUG_RTT_WriteString(0, "bmp280 OK\n");
     }
-    i2c_stop();
-    sensor_power_off();
 
     nrf24_data.temperature = aht20_data.temperature;
     nrf24_data.humidity    = aht20_data.humidity;
@@ -193,6 +181,7 @@ int main(void)
     } else {
       DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
     }
+    periph_mode_sleep();
     #ifdef debug
     while (SEGGER_RTT_HasDataUp(0) != 0);
     #endif
@@ -575,12 +564,6 @@ void DEBUG_RTT_WriteInt(uint8_t buffer_index, int num) {
 }
 #endif
 
-void LowPower_Delay(uint32_t Delay) {
-    uint32_t start = system_ticks;
-    while ((system_ticks - start) < Delay) {
-        __WFI(); 
-    }
-}
 /* USER CODE END 4 */
 
 /**

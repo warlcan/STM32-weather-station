@@ -50,6 +50,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/bmp280.c
     Core/Src/i2c_utils.c
     Core/Src/nrf24l01.c
+    Core/Src/bsp.c
 )
 
 # Add include paths
