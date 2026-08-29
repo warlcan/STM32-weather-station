@@ -18,6 +18,10 @@ extern volatile uint32_t system_ticks;
     _result;                                     \
 })
 
+typedef enum {
+    ERR_NO_ERROR = 0x0000U
+} BSP_ErrMask_t;
+
 void periph_mode_active();
 void periph_mode_sleep();
 

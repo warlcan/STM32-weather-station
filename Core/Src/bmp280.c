@@ -16,7 +16,7 @@ typedef struct {
 static BMP280_calibrate_bytes_t cb;
 static bool BMP280_is_init = false;
 
-// Temperature compensation from BMP280 datasheet
+// === TEMPERATURE COMPENSATION FROM DATASHEET ===
 static int32_t t_fine;
 int32_t bmp280_compensate_T_int32(int32_t adc_T) {
     int32_t var1, var2, T;
@@ -27,7 +27,7 @@ int32_t bmp280_compensate_T_int32(int32_t adc_T) {
     T = (t_fine * 5 + 128) >> 8;
     return T;
 }
-// Pressure compensation from BMP280 datasheet
+// === PRESSURE COMPENSATION FROM DATASHEET ===
 uint32_t bmp280_compensate_P_int64(int32_t adc_P) {
     int64_t var1, var2, p;
     var1 = ((int64_t)t_fine) - 128000;
@@ -46,7 +46,7 @@ uint32_t bmp280_compensate_P_int64(int32_t adc_P) {
 }
 
 bool bmp280_init(void) {
-    uint8_t calib[24]; //Receive compensation coefficients
+    uint8_t calib[24];
     if (!i2c_receive_reg_data(BMP280_I2C, BMP280_I2C_ADDRESS, 0x88, calib, sizeof(calib))) return false;
 
     cb.dig_T1 = (uint16_t)(calib[0]  | (calib[1] << 8));

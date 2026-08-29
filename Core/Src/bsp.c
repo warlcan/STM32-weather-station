@@ -21,11 +21,26 @@
 
 extern volatile uint32_t system_ticks;
 
+// === ERROR HANDLERS ===
+static volatile uint16_t system_errors = ERR_NO_ERROR;
+
+void bsp_error_set(BSP_ErrMask_t error_mask) {
+    system_errors |= error_mask;
+}
+
+void bsp_error_reset(BSP_ErrMask_t error_mask) {
+    system_errors &= ~error_mask;
+}
+
+uint16_t bsp_errors_get(void){
+    return system_errors;
+}
+
 // === SYSTEM ===
 
-void LowPower_Delay(uint32_t Delay) {
+void LowPower_Delay(uint32_t delay) {
     uint32_t start = system_ticks;
-    while ((system_ticks - start) < Delay) {
+    while ((system_ticks - start) < delay) {
         __WFI(); 
     }
 }
@@ -44,16 +59,14 @@ static inline void sensors_power_off() {
 // === I2C ===
 
 void i2c_start(void) {
-    //Reset triggers
+    //Reset i2c
     LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_I2C1);
     LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C1);
 
     MX_I2C1_Init();
 }
 
-void i2c_stop(void) {
-    WAIT_FLAG(!LL_I2C_IsActiveFlag_BUSY(I2C1), I2C_FLAG_BUSY_TIMEOUT); 
-    
+void i2c_stop(void) {    
     LL_I2C_Disable(I2C1);
     LL_APB1_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_I2C1);
     

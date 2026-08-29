@@ -124,10 +124,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
   LL_PWR_EnableUltraLowPower();
 
+  #ifdef debug
   DEBUG_RTT_Init();
   DEBUG_RTT_WriteString(0, "RTT initialized.\r\n");
-
-  #ifdef debug
   DEBUG_RTT_WriteString(0, "RCC-CSR: 0x");
   DEBUG_RTT_WriteInt(0, RCC->CSR);
   DEBUG_RTT_PutChar(0, '\n');

@@ -13,6 +13,7 @@ bool i2c_transmit_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *cmd_data,
         LL_I2C_TransmitData8(I2Cx, cmd_data[i]);
     }
     WAIT_FLAG(LL_I2C_IsActiveFlag_STOP(I2Cx), I2C_TIMEOUT_MS);
+    WAIT_FLAG(!LL_I2C_IsActiveFlag_BUSY(I2Cx), I2C_TIMEOUT_MS); 
     return true;
 }
 
@@ -25,6 +26,7 @@ bool i2c_receive_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *data_buffe
         data_buffer[i] = LL_I2C_ReceiveData8(I2Cx);
     }
     WAIT_FLAG(LL_I2C_IsActiveFlag_STOP(I2Cx), I2C_TIMEOUT_MS);
+    WAIT_FLAG(!LL_I2C_IsActiveFlag_BUSY(I2Cx), I2C_TIMEOUT_MS); 
     return true;
 }
 
@@ -46,5 +48,6 @@ bool i2c_receive_reg_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t reg_add
         data_buffer[i] = LL_I2C_ReceiveData8(I2Cx);
     }
     WAIT_FLAG(LL_I2C_IsActiveFlag_STOP(I2Cx), I2C_TIMEOUT_MS);
+    WAIT_FLAG(!LL_I2C_IsActiveFlag_BUSY(I2Cx), I2C_TIMEOUT_MS); 
     return true;
 }
