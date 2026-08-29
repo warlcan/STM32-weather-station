@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "main.h"
+#include "bsp.h"
 #include "stm32l0xx_ll_spi.h"
 #include "stm32l0xx_ll_gpio.h"
 

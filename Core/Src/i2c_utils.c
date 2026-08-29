@@ -4,19 +4,6 @@
 
 extern volatile uint32_t system_ticks;
 
-// #define WAIT_FLAG(I2Cx, target_func, timeout) do {      \
-//     uint32_t _start = system_ticks;                         \
-//     while (!target_func(I2Cx)) {                            \
-//         if(LL_I2C_IsActiveFlag_NACK(I2Cx) ||                \
-//            LL_I2C_IsActiveFlag_BERR(I2Cx)) {                \
-//             LL_I2C_ClearFlag_NACK(I2Cx);                    \
-//             LL_I2C_ClearFlag_BERR(I2Cx);                    \
-//             return false;                                   \
-//         }                                                   \
-//         if(system_ticks - _start >= timeout) return false;  \
-//     }                                                       \
-// } while(0)
-
 bool i2c_transmit_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *cmd_data, uint8_t cmd_size) {
     LL_I2C_HandleTransfer(I2Cx, slave_addr, 
                         LL_I2C_ADDRSLAVE_7BIT, cmd_size, 

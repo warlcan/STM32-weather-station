@@ -4,6 +4,8 @@
 #include "main.h"
 #include <stdbool.h>
 
+extern volatile uint32_t system_ticks;
+
 #define WAIT_FLAG(wait_flag_function, timeout) ({\
     uint32_t _start = system_ticks;              \
     bool _result = true;                         \

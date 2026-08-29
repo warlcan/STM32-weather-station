@@ -103,7 +103,6 @@ bool nrf24_transmit_data(NRF24_Data_t *nrf24_data) {
 
     if(!WAIT_FLAG(nrf24_spi_read_reg(NRF24_REG_ADDR_STATUS) & 0x20, SPI_TIMEOUT)) {
             nrf24_spi_set_reg(NRF24_REG_ADDR_STATUS, 0x70);
-            nrf24_spi_cmd(NRF24_CMD_TX_CLEAR);
             return false;
     }
 
