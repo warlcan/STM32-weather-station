@@ -146,10 +146,10 @@ int main(void)
   LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_20);
   LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_20);
 
-  periph_mode_active();
+  BSP_PeriphModeActive();
   NRF24_Init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
-  bmp280_init();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
-  periph_mode_sleep();
+  BMP280_GetCoef();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
+  BSP_PeriphModeSleep();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -159,13 +159,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    periph_mode_active();
-    if(!aht20_get_data(&aht20_data)) {
+    BSP_PeriphModeActive();
+    if(!AHT20_GetData(&aht20_data)) {
       DEBUG_RTT_WriteString(0, "aht20 error\n");
     } else {
       DEBUG_RTT_WriteString(0, "aht20 OK\n");
     }
-    if(!bmp280_get_data(&bmp280_data)) {
+    if(!BMP280_GetData(&bmp280_data)) {
       DEBUG_RTT_WriteString(0, "bmp280 error\n");
     } else {
       DEBUG_RTT_WriteString(0, "bmp280 OK\n");
@@ -180,7 +180,7 @@ int main(void)
     } else {
       DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
     }
-    periph_mode_sleep();
+    BSP_PeriphModeSleep();
     #ifdef debug
     while (SEGGER_RTT_HasDataUp(0) != 0);
     #endif

@@ -85,7 +85,6 @@ extern void LowPower_Delay(uint32_t Delay);
     while(cycles--);                            \
 } while(0)
 
-
 static uint8_t NRF24_SPI_TransmitByte(uint8_t data) {
     if (LL_SPI_IsActiveFlag_OVR(NRF24_SPI)) {
         LL_SPI_ReceiveData8(NRF24_SPI);
@@ -135,7 +134,6 @@ static void NRF24_SetTxAddress(uint8_t *addr) {
     WAIT_FLAG(!LL_SPI_IsActiveFlag_BSY(NRF24_SPI), SPI_TIMEOUT_MS);
     LL_GPIO_SetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
 }
-
 
 void NRF24_Init(void){
     NRF24_SetReg(NRF24_REG_EN_AA, 0x00);

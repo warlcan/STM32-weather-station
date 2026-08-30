@@ -11,6 +11,6 @@ typedef struct {
     float temperature;
 } AHT20_Data_t;
 
-bool aht20_get_data(AHT20_Data_t *out_data);
+bool AHT20_GetData(AHT20_Data_t *out_data);
 
 #endif

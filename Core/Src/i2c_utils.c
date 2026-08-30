@@ -4,7 +4,7 @@
 
 extern volatile uint32_t system_ticks;
 
-bool i2c_transmit_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *cmd_data, uint8_t cmd_size) {
+bool I2C_TransmitData(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *cmd_data, uint8_t cmd_size) {
     LL_I2C_HandleTransfer(I2Cx, slave_addr, 
                         LL_I2C_ADDRSLAVE_7BIT, cmd_size, 
                         LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
@@ -17,7 +17,7 @@ bool i2c_transmit_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *cmd_data,
     return true;
 }
 
-bool i2c_receive_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *data_buffer, uint8_t data_size) {
+bool I2C_ReceiveData(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *data_buffer, uint8_t data_size) {
     LL_I2C_HandleTransfer(I2Cx, slave_addr,
                           LL_I2C_ADDRSLAVE_7BIT, data_size, 
                           LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);
@@ -30,7 +30,7 @@ bool i2c_receive_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t *data_buffe
     return true;
 }
 
-bool i2c_receive_reg_data(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_buffer, uint8_t data_size) {
+bool I2C_ReceiveRegsData(I2C_TypeDef *I2Cx, uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_buffer, uint8_t data_size) {
     //Transmit register address
     LL_I2C_HandleTransfer(I2Cx, slave_addr, 
                         LL_I2C_ADDRSLAVE_7BIT, 1, 

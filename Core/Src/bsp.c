@@ -24,15 +24,15 @@ extern volatile uint32_t system_ticks;
 // === ERROR HANDLERS ===
 static volatile uint16_t system_errors = ERR_NO_ERROR;
 
-void bsp_error_set(BSP_ErrMask_t error_mask) {
+void BSP_ErrorSet(BSP_ErrMask_t error_mask) {
     system_errors |= error_mask;
 }
 
-void bsp_error_reset(BSP_ErrMask_t error_mask) {
+void BSP_ErrorReset(BSP_ErrMask_t error_mask) {
     system_errors &= ~error_mask;
 }
 
-uint16_t bsp_errors_get(void){
+uint16_t BSP_GetErrors(void){
     return system_errors;
 }
 
@@ -47,18 +47,18 @@ void LowPower_Delay(uint32_t delay) {
 
 // === SENSORS POWER ===
 
-static inline void sensors_power_on() {
+static inline void BSP_SensorsPowerOn() {
   LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_OUTPUT);
   LL_GPIO_SetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
 }
-static inline void sensors_power_off() {
+static inline void BSP_SensorsPowerOff() {
   LL_GPIO_SetPinMode(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin, LL_GPIO_MODE_ANALOG);
   LL_GPIO_ResetOutputPin(SENSOR_VDD_GPIO_Port, SENSOR_VDD_Pin);
 }
 
 // === I2C ===
 
-void i2c_start(void) {
+void BSP_I2cStart(void) {
     //Reset i2c
     LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_I2C1);
     LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C1);
@@ -66,7 +66,7 @@ void i2c_start(void) {
     MX_I2C1_Init();
 }
 
-void i2c_stop(void) {    
+void BSP_I2cStop(void) {    
     LL_I2C_Disable(I2C1);
     LL_APB1_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_I2C1);
     
@@ -76,12 +76,12 @@ void i2c_stop(void) {
 
 // === SPI ===
 
-void spi_start(void) {
+void BSP_SpiStart(void) {
     MX_SPI1_Init();
     LL_SPI_Enable(NRF24_SPI);  
 }
 
-void spi_stop(void){
+void BSP_SpiStop(void){
     LL_SPI_Disable(NRF24_SPI);
     LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_SPI1);
 
@@ -100,15 +100,15 @@ void spi_stop(void){
 
 // === PERIPHERAL MODES ===
 
-void periph_mode_active() {
-    sensors_power_on();
+void BSP_PeriphModeActive() {
+    BSP_SensorsPowerOn();
     LowPower_Delay(50);
-    i2c_start();
-    spi_start();
+    BSP_I2cStart();
+    BSP_SpiStart();
 }
 
-void periph_mode_sleep(){
-    i2c_stop();
-    spi_stop();
-    sensors_power_off();
+void BSP_PeriphModeSleep(){
+    BSP_I2cStop();
+    BSP_SpiStop();
+    BSP_SensorsPowerOff();
 }
