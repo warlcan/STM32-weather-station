@@ -147,7 +147,7 @@ int main(void)
   LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_20);
 
   periph_mode_active();
-  nrf24_init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
+  NRF24_Init();   DEBUG_RTT_WriteString(0, "NRF Init.\r\n");
   bmp280_init();  DEBUG_RTT_WriteString(0, "BMP Init.\r\n");
   periph_mode_sleep();
   /* USER CODE END 2 */
@@ -175,7 +175,7 @@ int main(void)
     nrf24_data.humidity    = aht20_data.humidity;
     nrf24_data.pressure    = bmp280_data.pressure;
 
-    if(!nrf24_transmit_data(&nrf24_data)) {
+    if(!NRF24_TransmitData(&nrf24_data)) {
       DEBUG_RTT_WriteString(0, "nrf24 error\n");
     } else {
       DEBUG_RTT_WriteString(0, "nrf24 packet send\n");

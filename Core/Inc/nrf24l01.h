@@ -14,7 +14,7 @@ typedef struct __attribute__((packed)) {
     float pressure;
 } NRF24_Data_t;
 
-void nrf24_init(void);
-bool nrf24_transmit_data(NRF24_Data_t *nrf24_data);
+void NRF24_Init(void);
+bool NRF24_TransmitData(NRF24_Data_t *nrf24_data);
 
 #endif
