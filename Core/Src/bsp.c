@@ -58,7 +58,7 @@ static inline void BSP_SensorsPowerOff() {
 
 // === I2C ===
 
-void BSP_I2cStart(void) {
+static void BSP_I2cStart(void) {
     //Reset i2c
     LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_I2C1);
     LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C1);
@@ -66,7 +66,7 @@ void BSP_I2cStart(void) {
     MX_I2C1_Init();
 }
 
-void BSP_I2cStop(void) {    
+static void BSP_I2cStop(void) {    
     LL_I2C_Disable(I2C1);
     LL_APB1_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_I2C1);
     
@@ -76,12 +76,12 @@ void BSP_I2cStop(void) {
 
 // === SPI ===
 
-void BSP_SpiStart(void) {
+static void BSP_SpiStart(void) {
     MX_SPI1_Init();
     LL_SPI_Enable(NRF24_SPI);  
 }
 
-void BSP_SpiStop(void){
+static void BSP_SpiStop(void){
     LL_SPI_Disable(NRF24_SPI);
     LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_SPI1);
 
