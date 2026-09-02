@@ -15,6 +15,6 @@ typedef struct __attribute__((packed)) {
 } NRF24_Data_t;
 
 void NRF24_Init(void);
-bool NRF24_TransmitData(NRF24_Data_t *nrf24_data);
+bool NRF24_TransmitData(NRF24_Data_t *nrf24_data, uint8_t nrf24_data_size);
 
 #endif

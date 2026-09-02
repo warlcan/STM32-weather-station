@@ -160,25 +160,21 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     BSP_PeriphModeActive();
+
     if(!AHT20_GetData(&aht20_data)) {
-      DEBUG_RTT_WriteString(0, "aht20 error\n");
-    } else {
-      DEBUG_RTT_WriteString(0, "aht20 OK\n");
+      BSP_ErrorSet(ERR_AHT20);
     }
+
     if(!BMP280_GetData(&bmp280_data)) {
-      DEBUG_RTT_WriteString(0, "bmp280 error\n");
-    } else {
-      DEBUG_RTT_WriteString(0, "bmp280 OK\n");
+      BSP_ErrorSet(ERR_BMP280);
     }
 
     nrf24_data.temperature = aht20_data.temperature;
     nrf24_data.humidity    = aht20_data.humidity;
     nrf24_data.pressure    = bmp280_data.pressure;
 
-    if(!NRF24_TransmitData(&nrf24_data)) {
-      DEBUG_RTT_WriteString(0, "nrf24 error\n");
-    } else {
-      DEBUG_RTT_WriteString(0, "nrf24 packet send\n");
+    if(!NRF24_TransmitData(&nrf24_data, sizeof(nrf24_data))) {
+      BSP_ErrorSet(ERR_NRF24);
     }
     BSP_PeriphModeSleep();
     #ifdef debug

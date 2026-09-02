@@ -9,17 +9,9 @@ extern volatile uint32_t system_ticks;
 
 static volatile uint8_t system_errors = ERR_NO_ERROR;
 
-void BSP_ErrorSet(BSP_ErrMask_t error_mask) {
-    system_errors |= error_mask;
-}
-
-void BSP_ErrorReset(BSP_ErrMask_t error_mask) {
-    system_errors &= ~error_mask;
-}
-
-uint8_t BSP_GetErrors(void) {
-    return system_errors;
-}
+void BSP_ErrorSet(BSP_ErrMask_t error_mask) {system_errors |= error_mask;}
+void BSP_ErrorReset(BSP_ErrMask_t error_mask) {system_errors &= ~error_mask;}
+uint8_t BSP_GetErrors(void) {return system_errors;}
 
 // === SYSTEM ===
 
