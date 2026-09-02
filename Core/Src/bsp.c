@@ -1,28 +1,13 @@
 #include "bsp.h"
 
 #define NRF24_SPI                  SPI1
-
-#define NRF24_REG_ADDR_CONFIG      0x00
-#define NRF24_REG_ADDR_EN_AA       0x01
-#define NRF24_REG_ADDR_SETUP_AW    0x03
-#define NRF24_REG_ADDR_SETUP_RETR  0x04
-#define NRF24_REG_ADDR_RF_CH       0x05
-#define NRF24_REG_ADDR_RF_SETUP    0x06
-#define NRF24_REG_ADDR_STATUS      0x07
-#define NRF24_REG_ADDR_FIFO_STATUS 0x17
-
-#define NRF24_CMD_TX_WRITE_PAYLOAD 0xA0
-#define NRF24_CMD_TX_CLEAR         0xE1
-
-#define NRF24_ON_DELAY_MS          2
-#define NRF24_CE_DELAY_US          20
-
 #define I2C_FLAG_BUSY_TIMEOUT      20
 
 extern volatile uint32_t system_ticks;
 
 // === ERROR HANDLERS ===
-static volatile uint16_t system_errors = ERR_NO_ERROR;
+
+static volatile uint8_t system_errors = ERR_NO_ERROR;
 
 void BSP_ErrorSet(BSP_ErrMask_t error_mask) {
     system_errors |= error_mask;
@@ -32,7 +17,7 @@ void BSP_ErrorReset(BSP_ErrMask_t error_mask) {
     system_errors &= ~error_mask;
 }
 
-uint16_t BSP_GetErrors(void){
+uint8_t BSP_GetErrors(void) {
     return system_errors;
 }
 
