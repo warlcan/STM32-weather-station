@@ -85,7 +85,7 @@ extern void LowPower_Delay(uint32_t Delay);
     while(cycles--);                            \
 } while(0)
 
-static uint8_t NRF24_SPI_TransmitByte(uint8_t data) {
+static uint8_t NRF24_SPI_WriteByte(uint8_t data) {
     if (LL_SPI_IsActiveFlag_OVR(NRF24_SPI)) {
         LL_SPI_ReceiveData8(NRF24_SPI);
     }
@@ -99,8 +99,8 @@ static uint8_t NRF24_SPI_TransmitByte(uint8_t data) {
 
 static void NRF24_SetReg(Nrf24RegAddr_t reg, uint8_t val) {
     LL_GPIO_ResetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
-    NRF24_SPI_TransmitByte(NRF24_CMD_W_REGISTER | (reg & 0x1F));
-    NRF24_SPI_TransmitByte(val);
+    NRF24_SPI_WriteByte(NRF24_CMD_W_REGISTER | (reg & 0x1F));
+    NRF24_SPI_WriteByte(val);
     WAIT_FLAG(!LL_SPI_IsActiveFlag_BSY(NRF24_SPI), SPI_TIMEOUT_MS);
     LL_GPIO_SetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
 }
@@ -108,28 +108,18 @@ static void NRF24_SetReg(Nrf24RegAddr_t reg, uint8_t val) {
 static uint8_t NRF24_ReadReg(Nrf24RegAddr_t reg) {
     uint8_t val;
     LL_GPIO_ResetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
-    NRF24_SPI_TransmitByte(reg & 0x1F);
-    val = NRF24_SPI_TransmitByte(0xFF); //0xFF - dummy byte
+    NRF24_SPI_WriteByte(reg & 0x1F);
+    val = NRF24_SPI_WriteByte(0xFF); //0xFF - dummy byte
     WAIT_FLAG(!LL_SPI_IsActiveFlag_BSY(NRF24_SPI), SPI_TIMEOUT_MS);
     LL_GPIO_SetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
     return val;
 }
 
-static void NRF24_TransmitBuffer(uint8_t reg, uint8_t *buf, uint8_t buf_size) {
+static void NRF24_WriteByteBuf(uint8_t cmd, uint8_t *buf, uint8_t buf_size) {
     LL_GPIO_ResetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
-    NRF24_SPI_TransmitByte(reg);
+    NRF24_SPI_WriteByte(cmd);
     for(uint8_t i = 0; i < buf_size; i++) {
-        NRF24_SPI_TransmitByte(buf[i]);
-    }
-    WAIT_FLAG(!LL_SPI_IsActiveFlag_BSY(NRF24_SPI), SPI_TIMEOUT_MS);
-    LL_GPIO_SetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
-}
-
-static void NRF24_SetTxAddress(uint8_t *addr) {
-    LL_GPIO_ResetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
-    NRF24_SPI_TransmitByte(NRF24_CMD_W_REGISTER | NRF24_REG_TX_ADDR);
-    for (int i = 0; i < 5; i++){
-        NRF24_SPI_TransmitByte(addr[i]);
+        NRF24_SPI_WriteByte(buf[i]);
     }
     WAIT_FLAG(!LL_SPI_IsActiveFlag_BSY(NRF24_SPI), SPI_TIMEOUT_MS);
     LL_GPIO_SetOutputPin(NRF_CSN_GPIO_Port, NRF_CSN_Pin);
@@ -144,16 +134,16 @@ void NRF24_Init(void){
     NRF24_SetReg(NRF24_REG_RF_SETUP, NRF24_DR_1MBPS | NRF24_PWR_0DBM);
 
     uint8_t addr[5] = {0x9c, 0x96, 0xf1, 0x1f, 0x5e}; //receiver address
-    NRF24_SetTxAddress(addr);
+    NRF24_WriteByteBuf(NRF24_CMD_W_REGISTER | NRF24_REG_TX_ADDR, addr, sizeof(addr));
     
     NRF24_SetReg(NRF24_REG_STATUS, NRF24_STATUS_CLEAR_ALL);
 }
 
-bool NRF24_TransmitData(NRF24_Data_t *nrf24_data) {
+bool NRF24_TransmitData(NRF24_Data_t *nrf24_data, uint8_t nrf24_data_size) {
     NRF24_SetReg(NRF24_REG_CONFIG, NRF24_CONFIG_POWER_UP);
     LowPower_Delay(NRF24_WAKEUP_DELAY_MS);
 
-    NRF24_TransmitBuffer(NRF24_CMD_W_TX_PAYLOAD, (uint8_t*)nrf24_data, sizeof(NRF24_Data_t));
+    NRF24_WriteByteBuf(NRF24_CMD_W_TX_PAYLOAD, (uint8_t*)nrf24_data, nrf24_data_size);
     LL_GPIO_SetOutputPin(NRF_CE_GPIO_Port, NRF_CE_Pin);
     NRF24_DELAY_US(NRF24_CE_DELAY_US);
     LL_GPIO_ResetOutputPin(NRF_CE_GPIO_Port, NRF_CE_Pin);
