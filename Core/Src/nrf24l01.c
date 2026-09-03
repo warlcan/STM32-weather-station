@@ -137,6 +137,10 @@ void NRF24_Init(void){
     NRF24_WriteByteBuf(NRF24_CMD_W_REGISTER | NRF24_REG_TX_ADDR, addr, sizeof(addr));
     
     NRF24_SetReg(NRF24_REG_STATUS, NRF24_STATUS_CLEAR_ALL);
+
+    uint8_t check_aw = NRF24_ReadReg(NRF24_REG_SETUP_AW);
+    if (check_aw != NRF24_AW_5BYTES) BSP_ErrorSet(ERR_NRF_NOT_FOUND);
+
 }
 
 bool NRF24_TransmitData(NRF24_Data_t *nrf24_data, uint8_t nrf24_data_size) {
