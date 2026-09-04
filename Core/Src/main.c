@@ -162,20 +162,18 @@ int main(void)
     BSP_PeriphModeActive();
 
     if(!AHT20_GetData(&aht20_data)) {
-      BSP_ErrorSet(ERR_AHT20);
+      DEBUG_RTT_WriteString(0, "AHT20 Error\n");
     }
 
     if(!BMP280_GetData(&bmp280_data)) {
-      BSP_ErrorSet(ERR_BMP280);
+      DEBUG_RTT_WriteString(0, "BMP280 Error\n");
     }
 
     nrf24_data.temperature = aht20_data.temperature;
     nrf24_data.humidity    = aht20_data.humidity;
     nrf24_data.pressure    = bmp280_data.pressure;
 
-    if(!NRF24_TransmitData(&nrf24_data, sizeof(nrf24_data))) {
-      BSP_ErrorSet(ERR_SPI_BUS);
-    }
+    NRF24_TransmitData(&nrf24_data, sizeof(nrf24_data));
     BSP_PeriphModeSleep();
     #ifdef debug
     while (SEGGER_RTT_HasDataUp(0) != 0);
@@ -552,10 +550,10 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 #ifdef debug
 void DEBUG_RTT_WriteInt(uint8_t buffer_index, int num) {
-  if (num == 0) { DEBUG_RTT_PutChar(0, '0'); return; }
-  if (num < 0)  { DEBUG_RTT_PutChar(0, '-'); num = -num; }
+  if (num == 0) { DEBUG_RTT_PutChar(buffer_index, '0'); return; }
+  if (num < 0)  { DEBUG_RTT_PutChar(buffer_index, '-'); num = -num; }
   if (num >= 10){ DEBUG_RTT_WriteInt(buffer_index, num / 10); }
-  DEBUG_RTT_PutChar(0, (num % 10) + '0');
+  DEBUG_RTT_PutChar(buffer_index, (num % 10) + '0');
 }
 #endif
 

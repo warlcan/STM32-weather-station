@@ -20,9 +20,9 @@ extern volatile uint32_t system_ticks;
 
 typedef enum {
     ERR_NO_ERROR = 0x00U,
-    ERR_AHT20    = 1 << 0,
-    ERR_BMP280   = 1 << 1,
-    ERR_SPI_BUS  = 1 << 2,
+    ERR_I2C_BUSY = 1 << 0,
+    ERR_I2C_TXRX = 1 << 1,
+    ERR_I2C_STOP = 1 << 2,
     ERR_NRF_NOT_FOUND = 1 << 3,
 } BSP_ErrMask_t;
 
