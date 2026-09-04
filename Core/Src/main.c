@@ -72,7 +72,7 @@ static void MX_IWDG_Init(void);
 #ifdef debug
 void DEBUG_RTT_WriteInt(uint8_t buffer_index, int num);
 #endif
-void LowPower_Delay(uint32_t Delay);
+void BSP_LowPowerDelay(uint32_t Delay);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -169,6 +169,7 @@ int main(void)
       DEBUG_RTT_WriteString(0, "BMP280 Error\n");
     }
 
+    nrf24_data.uid         = BSP_GetUID();
     nrf24_data.temperature = aht20_data.temperature;
     nrf24_data.humidity    = aht20_data.humidity;
     nrf24_data.pressure    = bmp280_data.pressure;

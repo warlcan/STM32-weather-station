@@ -9,6 +9,7 @@
 #include "stm32l0xx_ll_gpio.h"
 
 typedef struct __attribute__((packed)) {
+    uint32_t uid;
     float temperature;
     float humidity;
     float pressure;
