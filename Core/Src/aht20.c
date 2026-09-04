@@ -1,7 +1,5 @@
 #include "aht20.h"
 
-extern void LowPower_Delay(uint32_t Delay);
-
 #define AHT20_I2C                I2C1
 #define AHT20_I2C_ADDRESS        0x38 << 1
 
@@ -20,7 +18,7 @@ bool AHT20_GetData(AHT20_Data_t *out_data) {
     uint8_t measure_cmd_bytes[3] = {0xAC, 0x33, 0x00};
     if(!I2C_TransmitData(AHT20_I2C, AHT20_I2C_ADDRESS, measure_cmd_bytes, 3)) return false;
 
-    LowPower_Delay(AHT20_MEASURE_DELAY_MS);
+    BSP_LowPowerDelay(AHT20_MEASURE_DELAY_MS);
     
     //Receive
     uint8_t receive_data_buffer[6];
@@ -31,7 +29,7 @@ bool AHT20_GetData(AHT20_Data_t *out_data) {
     if ((receive_data_buffer[0] & AHT20_STATUS_CAL_BIT)  == 0) {
         uint8_t calibrate_cmd_bytes[] = {0xBE, 0x08, 0x00}; //Send calibrate command
         if(!I2C_TransmitData(AHT20_I2C, AHT20_I2C_ADDRESS, calibrate_cmd_bytes, 3)) return false;
-        LowPower_Delay(AHT20_CALIBRATE_DELAY_MS);
+        BSP_LowPowerDelay(AHT20_CALIBRATE_DELAY_MS);
         return false;
     }
 

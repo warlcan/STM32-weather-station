@@ -15,12 +15,18 @@ uint8_t BSP_GetErrors(void) {return system_errors;}
 
 // === SYSTEM ===
 
-void LowPower_Delay(uint32_t delay) {
+void BSP_LowPowerDelay(uint32_t delay) {
     uint32_t start = system_ticks;
     while ((system_ticks - start) < delay) {
         __WFI(); 
     }
 }
+
+uint32_t BSP_GetUID(void) {
+    uint32_t *uid = (uint32_t *)UID_BASE;
+    return uid[0] ^ uid[1] ^ uid[2];
+}
+
 
 // === SENSORS POWER ===
 
@@ -79,7 +85,7 @@ static void BSP_SpiStop(void){
 
 void BSP_PeriphModeActive() {
     BSP_SensorsPowerOn();
-    LowPower_Delay(50);
+    BSP_LowPowerDelay(50);
     BSP_I2cStart();
     BSP_SpiStart();
 }

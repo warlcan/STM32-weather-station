@@ -4,8 +4,6 @@
 #define BMP280_I2C_ADDRESS      (0x77 << 1)
 #define BMP280_MEASURE_DELAY_MS 20
 
-extern void LowPower_Delay(uint32_t Delay);
-
 typedef struct {
     uint16_t dig_T1; int16_t  dig_T2; int16_t  dig_T3;
     
@@ -73,7 +71,7 @@ bool BMP280_GetData(BMP280_Data_t *out_data) {
     uint8_t bmp280_config_data[2] = {0xF4, 0x4D}; // 0x010_011_01
     if (!I2C_TransmitData(BMP280_I2C, BMP280_I2C_ADDRESS, bmp280_config_data, sizeof(bmp280_config_data))){ return false; }
     
-    LowPower_Delay(BMP280_MEASURE_DELAY_MS);
+    BSP_LowPowerDelay(BMP280_MEASURE_DELAY_MS);
 
     //Receive measurement data
     uint8_t measure_buffer[6];

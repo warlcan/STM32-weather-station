@@ -26,6 +26,9 @@ typedef enum {
     ERR_NRF_NOT_FOUND = 1 << 3,
 } BSP_ErrMask_t;
 
+void BSP_LowPowerDelay(uint32_t Delay);
+uint32_t BSP_GetUID();
+
 void BSP_ErrorSet(BSP_ErrMask_t error_mask);
 void BSP_ErrorReset(BSP_ErrMask_t error_mask);
 uint8_t BSP_GetErrors(void);

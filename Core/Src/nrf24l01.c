@@ -76,8 +76,6 @@ typedef enum {
 #define NRF24_CMD_FLUSH_TX      0xE1
 #define NRF24_CMD_FLUSH_RX      0xE2
 
-extern void LowPower_Delay(uint32_t Delay);
-
 //US delay for 2.1 MHz
 #define NRF24_DELAY_US(us) do {                 \
     volatile uint32_t cycles = ((us) * 7) / 10; \
@@ -145,7 +143,7 @@ void NRF24_Init(void){
 
 bool NRF24_TransmitData(NRF24_Data_t *nrf24_data, uint8_t nrf24_data_size) {
     NRF24_SetReg(NRF24_REG_CONFIG, NRF24_CONFIG_POWER_UP);
-    LowPower_Delay(NRF24_WAKEUP_DELAY_MS);
+    BSP_LowPowerDelay(NRF24_WAKEUP_DELAY_MS);
 
     NRF24_WriteByteBuf(NRF24_CMD_W_TX_PAYLOAD, (uint8_t*)nrf24_data, nrf24_data_size);
     LL_GPIO_SetOutputPin(NRF_CE_GPIO_Port, NRF_CE_Pin);
