@@ -174,7 +174,7 @@ int main(void)
     nrf24_data.pressure    = bmp280_data.pressure;
 
     if(!NRF24_TransmitData(&nrf24_data, sizeof(nrf24_data))) {
-      BSP_ErrorSet(ERR_NRF24);
+      BSP_ErrorSet(ERR_SPI_BUS);
     }
     BSP_PeriphModeSleep();
     #ifdef debug
