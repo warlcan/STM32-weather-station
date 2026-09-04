@@ -12,6 +12,7 @@ typedef struct __attribute__((packed)) {
     float temperature;
     float humidity;
     float pressure;
+    uint8_t errors;
 } NRF24_Data_t;
 
 void NRF24_Init(void);

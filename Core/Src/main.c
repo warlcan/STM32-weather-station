@@ -172,6 +172,7 @@ int main(void)
     nrf24_data.temperature = aht20_data.temperature;
     nrf24_data.humidity    = aht20_data.humidity;
     nrf24_data.pressure    = bmp280_data.pressure;
+    nrf24_data.errors      = BSP_GetErrors();
 
     NRF24_TransmitData(&nrf24_data, sizeof(nrf24_data));
     BSP_PeriphModeSleep();
